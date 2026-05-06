@@ -87,7 +87,8 @@ export default function Generator() {
         type: formData.type,
         amount: formData.amount,
         data: formData,
-      })      if (error) throw error
+      })
+      if (error) throw error
       toast.success('Recibo salvo com sucesso no histórico!')
     } catch (error) {
       toast.error('Erro ao salvar o recibo.')
@@ -116,8 +117,13 @@ export default function Generator() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Tipo de Documento</Label>
-              <Select value={formData.type} onValueChange={(v) => setFormData(p => ({ ...p, type: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={formData.type}
+                onValueChange={(v) => setFormData((p) => ({ ...p, type: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="receipt">Recibo Simples</SelectItem>
                   <SelectItem value="promissory">Nota Promissória</SelectItem>
@@ -174,7 +180,9 @@ export default function Generator() {
             <div className="space-y-2">
               <Label>Nome do Cliente</Label>
               <datalist id="clients-list">
-                {clients.map(c => <option key={c.id} value={c.name} />)}
+                {clients.map((c) => (
+                  <option key={c.id} value={c.name} />
+                ))}
               </datalist>
               <Input
                 list="clients-list"
