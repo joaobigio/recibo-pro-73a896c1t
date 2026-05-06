@@ -4,6 +4,7 @@ import { generatePixPayload } from '@/lib/pix'
 
 interface ReceiptPreviewProps {
   data: {
+    type?: string
     amount: number
     date: string
     clientName: string
@@ -23,6 +24,15 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
       ? generatePixPayload(data.issuerPixKey, data.amount, data.issuerName || 'Emissor')
       : null
 
+  const titles: Record<string, string> = {
+    receipt: 'Recibo',
+    promissory: 'Nota Promissória',
+    budget: 'Orçamento',
+    service_order: 'Ordem de Serviço',
+  }
+  const documentType = data.type || 'receipt'
+  const documentTitle = titles[documentType] || 'Documento'
+
   return (
     <div
       id="print-area"
@@ -30,34 +40,63 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
     >
       <div>
         <div className="text-center border-b-2 border-gray-200 pb-6 mb-8 flex justify-between items-center">
-          <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">Recibo</h2>
+          <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">
+            {documentTitle}
+          </h2>
           <div className="bg-gray-100 px-6 py-2 rounded font-semibold text-xl">
             {formatCurrency(data.amount)}
           </div>
         </div>
 
         <div className="space-y-6 text-lg leading-loose text-justify">
-          <p>
-            Recebi(emos) de{' '}
-            <strong className="font-semibold uppercase">
-              {data.clientName || '________________________________________'}
-            </strong>
-            , inscrito no CPF/CNPJ sob o nº{' '}
-            <strong className="font-semibold">
-              {data.clientDocument || '________________________'}
-            </strong>
-            , a importância de{' '}
-            <strong className="font-semibold uppercase">
-              {numeroPorExtenso(data.amount) || '________________________________'}
-            </strong>
-            , referente a{' '}
-            <strong className="font-semibold">
-              {data.description ||
-                '________________________________________________________________'}
-            </strong>
-            .
-          </p>
-          <p>Para maior clareza e validade, firmo(amos) o presente recibo.</p>
+          {documentType === 'promissory' ? (
+            <p>
+              No dia{' '}
+              <strong className="font-semibold">
+                {data.date ? formatDate(data.date) : '____/____/______'}
+              </strong>
+              , pagarei(emos) por esta única via de NOTA PROMISSÓRIA a{' '}
+              <strong className="font-semibold uppercase">
+                {data.issuerName || '________________________________________'}
+              </strong>
+              , o valor de{' '}
+              <strong className="font-semibold uppercase">
+                {numeroPorExtenso(data.amount) || '________________________________'}
+              </strong>
+              , referente a{' '}
+              <strong className="font-semibold">
+                {data.description ||
+                  '________________________________________________________________'}
+              </strong>
+              .
+            </p>
+          ) : (
+            <p>
+              Recebi(emos) de{' '}
+              <strong className="font-semibold uppercase">
+                {data.clientName || '________________________________________'}
+              </strong>
+              , inscrito no CPF/CNPJ sob o nº{' '}
+              <strong className="font-semibold">
+                {data.clientDocument || '________________________'}
+              </strong>
+              , a importância de{' '}
+              <strong className="font-semibold uppercase">
+                {numeroPorExtenso(data.amount) || '________________________________'}
+              </strong>
+              , referente a{' '}
+              <strong className="font-semibold">
+                {data.description ||
+                  '________________________________________________________________'}
+              </strong>
+              .
+            </p>
+          )}
+          {documentType !== 'promissory' && (
+            <p>
+              Para maior clareza e validade, firmo(amos) o presente {documentTitle.toLowerCase()}.
+            </p>
+          )}
         </div>
       </div>
 

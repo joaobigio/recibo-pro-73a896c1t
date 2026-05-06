@@ -9,6 +9,7 @@ import Index from './pages/Index'
 import Login from './pages/auth/Login'
 import Generator from './pages/documents/Generator'
 import Clients from './pages/clients/Clients'
+import AdminDashboard from './pages/admin/AdminDashboard'
 import NotFound from './pages/NotFound'
 
 const App = () => (
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/gerador" element={<Generator />} />
             <Route path="/clientes" element={<Clients />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

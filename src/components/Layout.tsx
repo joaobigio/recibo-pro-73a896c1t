@@ -1,91 +1,88 @@
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/use-auth'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
-} from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { LayoutDashboard, FileText, Users, Settings, LogOut, Receipt } from 'lucide-react'
+import { LogOut, LayoutDashboard, FileText, Users, ShieldAlert } from 'lucide-react'
 
 export default function Layout() {
-  const { session, loading, signOut } = useAuth()
+  const { user, loading, isAdmin, signOut } = useAuth()
   const location = useLocation()
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center">Carregando...</div>
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
   }
 
-  if (!session) {
+  if (!user) {
     return <Navigate to="/login" />
   }
 
-  const navItems = [
-    { title: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { title: 'Emitir Recibo', path: '/gerador', icon: FileText },
-    { title: 'Clientes', path: '/clientes', icon: Users },
-  ]
-
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full bg-muted/20 overflow-hidden">
-        <Sidebar className="print:hidden border-r">
-          <SidebarHeader className="p-4 flex flex-row items-center gap-2 border-b">
-            <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
-              <Receipt className="h-5 w-5" />
-            </div>
-            <span className="font-semibold text-lg">Recibo Pro</span>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navItems.map((item) => (
-                    <SidebarMenuItem key={item.path}>
-                      <SidebarMenuButton asChild isActive={location.pathname === item.path}>
-                        <Link to={item.path}>
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter className="p-4 border-t">
+    <div className="min-h-screen flex flex-col md:flex-row bg-muted/20">
+      <aside className="w-full md:w-64 bg-background border-r flex flex-col print:hidden">
+        <div className="p-4 border-b">
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-primary">
+            <FileText className="h-6 w-6" />
+            Recibo Pro
+          </h2>
+        </div>
+        <nav className="flex-1 p-4 space-y-2">
+          <Link to="/">
             <Button
-              variant="ghost"
-              className="w-full justify-start text-muted-foreground"
-              onClick={() => signOut()}
+              variant={location.pathname === '/' ? 'secondary' : 'ghost'}
+              className="w-full justify-start"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sair
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              Dashboard
             </Button>
-          </SidebarFooter>
-        </Sidebar>
+          </Link>
+          <Link to="/gerador">
+            <Button
+              variant={location.pathname === '/gerador' ? 'secondary' : 'ghost'}
+              className="w-full justify-start"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Gerar Documento
+            </Button>
+          </Link>
+          <Link to="/clientes">
+            <Button
+              variant={location.pathname === '/clientes' ? 'secondary' : 'ghost'}
+              className="w-full justify-start"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Meus Clientes
+            </Button>
+          </Link>
 
-        <SidebarInset className="flex-1 overflow-auto bg-transparent">
-          <header className="h-14 lg:hidden flex items-center px-4 border-b bg-background print:hidden">
-            <SidebarTrigger />
-          </header>
-          <main className="p-4 md:p-6 print:p-0 h-full">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+          {isAdmin && (
+            <>
+              <div className="pt-4 pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Administração
+                </p>
+              </div>
+              <Link to="/admin">
+                <Button
+                  variant={location.pathname.startsWith('/admin') ? 'secondary' : 'ghost'}
+                  className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <ShieldAlert className="mr-2 h-4 w-4" />
+                  Painel Global
+                </Button>
+              </Link>
+            </>
+          )}
+        </nav>
+        <div className="p-4 border-t">
+          <Button variant="outline" className="w-full justify-start" onClick={() => signOut()}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair
+          </Button>
+        </div>
+      </aside>
+
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto h-screen print:p-0 print:h-auto">
+        <Outlet />
+      </main>
+    </div>
   )
 }

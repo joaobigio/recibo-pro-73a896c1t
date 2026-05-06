@@ -1,23 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/format'
-import { getDocuments, Document } from '@/services/documents'
+import { getMyDocuments, Document } from '@/services/documents'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { FileText, DollarSign, Users } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function Index() {
+  const { user } = useAuth()
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getDocuments().then(({ data }) => {
-      if (data) setDocuments(data)
-      setLoading(false)
-    })
-  }, [])
+    if (user) {
+      getMyDocuments(user.id).then(({ data }) => {
+        if (data) setDocuments(data)
+        setLoading(false)
+      })
+    }
+  }, [user])
 
   const totalEmitted = documents.reduce((acc, doc) => acc + Number(doc.amount), 0)
   const thisMonthDocs = documents.filter(

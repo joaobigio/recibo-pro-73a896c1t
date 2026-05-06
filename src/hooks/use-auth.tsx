@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 interface AuthContextType {
   user: User | null
   session: Session | null
+  isAdmin: boolean
   signUp: (email: string, password: string, name: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<{ error: any }>
@@ -22,21 +23,37 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const fetchProfile = async (userId: string) => {
+      const { data } = await supabase.from('profiles').select('is_admin').eq('id', userId).single()
+      setIsAdmin(!!data?.is_admin)
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) {
+        fetchProfile(session.user.id).then(() => setLoading(false))
+      } else {
+        setIsAdmin(false)
+        setLoading(false)
+      }
     })
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) {
+        fetchProfile(session.user.id).then(() => setLoading(false))
+      } else {
+        setIsAdmin(false)
+        setLoading(false)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -65,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, signUp, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, signUp, signIn, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   )

@@ -28,6 +28,7 @@ export default function Generator() {
   const [saving, setSaving] = useState(false)
 
   const [formData, setFormData] = useState({
+    type: 'receipt',
     amount: 0,
     date: new Date().toISOString().split('T')[0],
     clientName: '',
@@ -39,6 +40,14 @@ export default function Generator() {
     showPix: false,
     signature: null as string | null,
   })
+
+  const handleClientNameChange = (name: string) => {
+    setFormData((p) => ({ ...p, clientName: name }))
+    const found = clients.find((c) => c.name.toLowerCase() === name.toLowerCase())
+    if (found) {
+      setFormData((p) => ({ ...p, clientDocument: found.document || '' }))
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -75,11 +84,10 @@ export default function Generator() {
     setSaving(true)
     try {
       const { error } = await createDocument(user.id, {
-        type: 'receipt',
+        type: formData.type,
         amount: formData.amount,
         data: formData,
-      })
-      if (error) throw error
+      })      if (error) throw error
       toast.success('Recibo salvo com sucesso no histórico!')
     } catch (error) {
       toast.error('Erro ao salvar o recibo.')
@@ -106,6 +114,18 @@ export default function Generator() {
             <CardTitle className="text-lg">Dados Principais</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Tipo de Documento</Label>
+              <Select value={formData.type} onValueChange={(v) => setFormData(p => ({ ...p, type: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="receipt">Recibo Simples</SelectItem>
+                  <SelectItem value="promissory">Nota Promissória</SelectItem>
+                  <SelectItem value="budget">Orçamento</SelectItem>
+                  <SelectItem value="service_order">Ordem de Serviço</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-2">
               <Label>Valor (R$)</Label>
               <Input
@@ -153,9 +173,14 @@ export default function Generator() {
             )}
             <div className="space-y-2">
               <Label>Nome do Cliente</Label>
+              <datalist id="clients-list">
+                {clients.map(c => <option key={c.id} value={c.name} />)}
+              </datalist>
               <Input
+                list="clients-list"
                 value={formData.clientName}
-                onChange={(e) => setFormData((p) => ({ ...p, clientName: e.target.value }))}
+                onChange={(e) => handleClientNameChange(e.target.value)}
+                placeholder="Digite para autocompletar..."
               />
             </div>
             <div className="space-y-2">
