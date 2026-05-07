@@ -84,10 +84,19 @@ export function SignaturePad({ className, onSave }: SignaturePadProps) {
     }
   }
 
-  // Ensure canvas matches its display size
+  // Ensure canvas matches its display size and handles resize properly
   useEffect(() => {
     const canvas = canvasRef.current
-    if (canvas) {
+    if (!canvas) return
+
+    const handleResize = () => {
+      // Create a temporary canvas to save the current drawing to avoid losing it on resize
+      const tempCanvas = document.createElement('canvas')
+      tempCanvas.width = canvas.width
+      tempCanvas.height = canvas.height
+      const tempCtx = tempCanvas.getContext('2d')
+      if (tempCtx) tempCtx.drawImage(canvas, 0, 0)
+
       canvas.width = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
       const ctx = canvas.getContext('2d')
@@ -95,8 +104,15 @@ export function SignaturePad({ className, onSave }: SignaturePadProps) {
         ctx.lineWidth = 2
         ctx.lineCap = 'round'
         ctx.strokeStyle = '#000'
+        ctx.drawImage(tempCanvas, 0, 0)
       }
     }
+
+    handleResize()
+
+    // Add window resize listener
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (

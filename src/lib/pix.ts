@@ -39,6 +39,8 @@ export function generatePixPayload(
   const name = format(
     '59',
     merchantName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .substring(0, 25)
       .replace(/[^a-zA-Z0-9 ]/g, '')
       .toUpperCase() || 'MERCHANT',
@@ -46,6 +48,8 @@ export function generatePixPayload(
   const city = format(
     '60',
     merchantCity
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .substring(0, 15)
       .replace(/[^a-zA-Z0-9 ]/g, '')
       .toUpperCase() || 'CITY',

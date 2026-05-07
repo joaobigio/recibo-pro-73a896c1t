@@ -206,6 +206,7 @@ export default function Clients() {
                 <Label htmlFor="document">CPF ou CNPJ</Label>
                 <Input
                   id="document"
+                  placeholder="Apenas números ou formato padrão"
                   value={formData.document}
                   onChange={(e) => setFormData((p) => ({ ...p, document: e.target.value }))}
                 />

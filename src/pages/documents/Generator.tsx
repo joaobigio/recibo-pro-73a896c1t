@@ -68,17 +68,6 @@ export default function Generator() {
     }
   }, [user])
 
-  const handleClientSelect = (clientId: string) => {
-    const client = clients.find((c) => c.id === clientId)
-    if (client) {
-      setFormData((prev) => ({
-        ...prev,
-        clientName: client.name,
-        clientDocument: client.document || '',
-      }))
-    }
-  }
-
   const handleSave = async () => {
     if (!user) return
     setSaving(true)
@@ -160,42 +149,55 @@ export default function Generator() {
             <CardTitle className="text-lg">Cliente</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {clients.length > 0 && (
-              <div className="space-y-2">
-                <Label>Selecionar cliente existente</Label>
-                <Select onValueChange={handleClientSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
             <div className="space-y-2">
               <Label>Nome do Cliente</Label>
-              <datalist id="clients-list">
-                {clients.map((c) => (
-                  <option key={c.id} value={c.name} />
-                ))}
-              </datalist>
-              <Input
-                list="clients-list"
-                value={formData.clientName}
-                onChange={(e) => handleClientNameChange(e.target.value)}
-                placeholder="Digite para autocompletar..."
-              />
+              <div className="relative group">
+                <Input
+                  value={formData.clientName}
+                  onChange={(e) => handleClientNameChange(e.target.value)}
+                  placeholder="Digite para buscar ou adicionar novo..."
+                  className="peer"
+                  autoComplete="off"
+                />
+                {formData.clientName &&
+                  clients.filter(
+                    (c) =>
+                      c.name.toLowerCase().includes(formData.clientName.toLowerCase()) &&
+                      c.name.toLowerCase() !== formData.clientName.toLowerCase(),
+                  ).length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg opacity-0 invisible peer-focus:opacity-100 peer-focus:visible hover:opacity-100 hover:visible transition-all max-h-48 overflow-y-auto">
+                      {clients
+                        .filter(
+                          (c) =>
+                            c.name.toLowerCase().includes(formData.clientName.toLowerCase()) &&
+                            c.name.toLowerCase() !== formData.clientName.toLowerCase(),
+                        )
+                        .map((client) => (
+                          <div
+                            key={client.id}
+                            className="px-3 py-2 cursor-pointer hover:bg-muted text-sm border-b last:border-0"
+                            onMouseDown={(e) => {
+                              // Usamos onMouseDown para engatilhar antes do onBlur do input
+                              e.preventDefault()
+                              handleClientNameChange(client.name)
+                            }}
+                          >
+                            <p className="font-medium">{client.name}</p>
+                            {client.document && (
+                              <p className="text-xs text-muted-foreground">{client.document}</p>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  )}
+              </div>
             </div>
             <div className="space-y-2">
               <Label>CPF/CNPJ do Cliente</Label>
               <Input
                 value={formData.clientDocument}
                 onChange={(e) => setFormData((p) => ({ ...p, clientDocument: e.target.value }))}
+                placeholder="000.000.000-00"
               />
             </div>
           </CardContent>
