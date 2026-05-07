@@ -255,10 +255,29 @@ export default function Generator() {
 
       {/* Preview Area */}
       <div className="w-full xl:w-2/3 flex flex-col bg-muted/30 p-4 md:p-8 rounded-lg overflow-y-auto print:p-0 print:bg-white border print:border-none relative">
-        <div className="absolute top-4 right-4 flex gap-2 print:hidden">
+        <div className="absolute top-4 right-4 flex gap-2 print:hidden flex-wrap justify-end">
           <Button variant="outline" size="sm" onClick={handleSave} disabled={saving}>
             <Save className="h-4 w-4 mr-2" />
             Salvar
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const titles: Record<string, string> = {
+                receipt: 'Recibo',
+                promissory: 'Nota Promissória',
+                budget: 'Orçamento',
+                service_order: 'Ordem de Serviço',
+              }
+              const title = titles[formData.type] || 'Documento'
+              const text = `Olá ${formData.clientName}! Aqui está o seu ${title} no valor de R$ ${formData.amount.toFixed(2).replace('.', ',')}.\nReferente a: ${formData.description}`
+              window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+            }}
+            className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            WhatsApp
           </Button>
           <Button variant="default" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />

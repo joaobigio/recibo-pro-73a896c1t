@@ -1,101 +1,104 @@
-export function numeroPorExtenso(numero: number): string {
-  if (numero === 0) return 'zero reais'
+const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove']
+const dezenas = [
+  '',
+  'dez',
+  'vinte',
+  'trinta',
+  'quarenta',
+  'cinquenta',
+  'sessenta',
+  'setenta',
+  'oitenta',
+  'noventa',
+]
+const especiais = [
+  'dez',
+  'onze',
+  'doze',
+  'treze',
+  'quatorze',
+  'quinze',
+  'dezesseis',
+  'dezessete',
+  'dezoito',
+  'dezenove',
+]
+const centenas = [
+  '',
+  'cento',
+  'duzentos',
+  'trezentos',
+  'quatrocentos',
+  'quinhentos',
+  'seiscentos',
+  'setecentos',
+  'oitocentos',
+  'novecentos',
+]
 
-  const inteiros = Math.floor(numero)
-  const centavos = Math.round((numero - inteiros) * 100)
-
-  const getGrupo = (n: number): string => {
-    const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove']
-    const dezenasEspeciais = [
-      'dez',
-      'onze',
-      'doze',
-      'treze',
-      'quatorze',
-      'quinze',
-      'dezesseis',
-      'dezessete',
-      'dezoito',
-      'dezenove',
-    ]
-    const dezenas = [
-      '',
-      '',
-      'vinte',
-      'trinta',
-      'quarenta',
-      'cinquenta',
-      'sessenta',
-      'setenta',
-      'oitenta',
-      'noventa',
-    ]
-    const centenas = [
-      '',
-      'cento',
-      'duzentos',
-      'trezentos',
-      'quatrocentos',
-      'quinhentos',
-      'seiscentos',
-      'setecentos',
-      'oitocentos',
-      'novecentos',
-    ]
-
-    if (n === 100) return 'cem'
-
-    let str = ''
-    const c = Math.floor(n / 100)
-    const d = Math.floor((n % 100) / 10)
-    const u = n % 10
-
-    if (c > 0) str += centenas[c]
-
-    if (d === 1) {
-      if (str) str += ' e '
-      str += dezenasEspeciais[u]
-    } else {
-      if (d > 1) {
-        if (str) str += ' e '
-        str += dezenas[d]
-      }
-      if (u > 0) {
-        if (str) str += ' e '
-        str += unidades[u]
-      }
-    }
-    return str
-  }
+function numeroParaPalavras(n: number): string {
+  if (n === 0) return ''
+  if (n === 100) return 'cem'
 
   const partes = []
+  const c = Math.floor(n / 100)
+  const r = n % 100
+  const d = Math.floor(r / 10)
+  const u = r % 10
 
-  const milhoes = Math.floor(inteiros / 1000000)
-  const milhares = Math.floor((inteiros % 1000000) / 1000)
-  const centenas = inteiros % 1000
+  if (c > 0) partes.push(centenas[c])
 
-  if (milhoes > 0) {
-    partes.push(getGrupo(milhoes) + (milhoes === 1 ? ' milhão' : ' milhões'))
+  if (d === 1) {
+    partes.push(especiais[u])
+  } else {
+    if (d > 1) partes.push(dezenas[d])
+    if (u > 0 && d !== 1) partes.push(unidades[u])
   }
 
-  if (milhares > 0) {
-    partes.push(getGrupo(milhares) + ' mil')
+  return partes.join(' e ')
+}
+
+export function numeroPorExtenso(valor: number): string {
+  if (!valor || valor === 0) return 'zero reais'
+
+  const reais = Math.floor(valor)
+  const centavos = Math.round((valor - reais) * 100)
+
+  let extensoReais = ''
+  if (reais > 0) {
+    if (reais >= 1000000) {
+      const milhoes = Math.floor(reais / 1000000)
+      const restoMilhoes = reais % 1000000
+      extensoReais += numeroParaPalavras(milhoes) + (milhoes === 1 ? ' milhão' : ' milhões')
+
+      const milhares = Math.floor(restoMilhoes / 1000)
+      if (milhares > 0) {
+        extensoReais += ' e ' + (milhares === 1 ? 'um' : numeroParaPalavras(milhares)) + ' mil'
+      }
+      const restoMil = restoMilhoes % 1000
+      if (restoMil > 0) extensoReais += ' e ' + numeroParaPalavras(restoMil)
+    } else if (reais >= 1000) {
+      const milhares = Math.floor(reais / 1000)
+      const restoMilhares = reais % 1000
+      extensoReais += (milhares === 1 ? 'um' : numeroParaPalavras(milhares)) + ' mil'
+      if (restoMilhares > 0) extensoReais += ' e ' + numeroParaPalavras(restoMilhares)
+    } else {
+      extensoReais += numeroParaPalavras(reais)
+    }
+    extensoReais += reais === 1 ? ' real' : ' reais'
   }
 
-  if (centenas > 0 || (inteiros === 0 && centavos === 0)) {
-    partes.push(getGrupo(centenas))
-  }
-
-  let extensoStr = partes.join(' e ')
-
-  if (inteiros > 0) {
-    extensoStr += inteiros === 1 ? ' real' : ' reais'
-  }
-
+  let extensoCentavos = ''
   if (centavos > 0) {
-    const centavosStr = getGrupo(centavos) + (centavos === 1 ? ' centavo' : ' centavos')
-    extensoStr += (inteiros > 0 ? ' e ' : '') + centavosStr
+    extensoCentavos += numeroParaPalavras(centavos)
+    extensoCentavos += centavos === 1 ? ' centavo' : ' centavos'
   }
 
-  return extensoStr.charAt(0).toUpperCase() + extensoStr.slice(1)
+  if (reais > 0 && centavos > 0) {
+    return `${extensoReais} e ${extensoCentavos}`
+  } else if (reais > 0) {
+    return extensoReais
+  } else {
+    return extensoCentavos
+  }
 }

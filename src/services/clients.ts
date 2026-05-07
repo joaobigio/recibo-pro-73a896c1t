@@ -2,23 +2,39 @@ import { supabase } from '@/lib/supabase/client'
 
 export interface Client {
   id: string
+  user_id: string
   name: string
-  document: string | null
-  email: string | null
-  phone: string | null
-  address: string | null
+  document?: string | null
+  email?: string | null
+  phone?: string | null
+  address?: string | null
+  created_at: string
 }
 
 export const getClients = async () => {
-  const { data, error } = await supabase.from('clients').select('*').order('name')
+  const { data, error } = await supabase
+    .from('clients')
+    .select('*')
+    .order('name', { ascending: true })
   return { data: data as Client[] | null, error }
 }
 
-export const createClient = async (userId: string, client: Omit<Client, 'id'>) => {
+export const createClient = async (client: Partial<Client>) => {
+  const { data, error } = await supabase.from('clients').insert(client).select().single()
+  return { data: data as Client | null, error }
+}
+
+export const updateClient = async (id: string, updates: Partial<Client>) => {
   const { data, error } = await supabase
     .from('clients')
-    .insert([{ ...client, user_id: userId }])
+    .update(updates)
+    .eq('id', id)
     .select()
     .single()
-  return { data, error }
+  return { data: data as Client | null, error }
+}
+
+export const deleteClient = async (id: string) => {
+  const { error } = await supabase.from('clients').delete().eq('id', id)
+  return { error }
 }

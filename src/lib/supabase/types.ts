@@ -110,6 +110,7 @@ export type Database = {
           document: string | null
           email: string
           id: string
+          is_admin: boolean
           logo_url: string | null
           name: string | null
           phone: string | null
@@ -121,6 +122,7 @@ export type Database = {
           document?: string | null
           email: string
           id: string
+          is_admin?: boolean
           logo_url?: string | null
           name?: string | null
           phone?: string | null
@@ -132,6 +134,7 @@ export type Database = {
           document?: string | null
           email?: string
           id?: string
+          is_admin?: boolean
           logo_url?: string | null
           name?: string | null
           phone?: string | null
@@ -145,7 +148,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
@@ -317,6 +320,7 @@ export const Constants = {
 //   logo_url: text (nullable)
 //   created_at: timestamp with time zone (not null, default: now())
 //   updated_at: timestamp with time zone (not null, default: now())
+//   is_admin: boolean (not null, default: false)
 
 // --- CONSTRAINTS ---
 // Table: clients
@@ -333,20 +337,20 @@ export const Constants = {
 // --- ROW LEVEL SECURITY POLICIES ---
 // Table: clients
 //   Policy "Users can manage their clients" (ALL, PERMISSIVE) roles={authenticated}
-//     USING: (auth.uid() = user_id)
-//     WITH CHECK: (auth.uid() = user_id)
+//     USING: ((auth.uid() = user_id) OR is_admin())
+//     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 // Table: documents
 //   Policy "Users can manage their documents" (ALL, PERMISSIVE) roles={authenticated}
-//     USING: (auth.uid() = user_id)
-//     WITH CHECK: (auth.uid() = user_id)
+//     USING: ((auth.uid() = user_id) OR is_admin())
+//     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 // Table: profiles
 //   Policy "Users can insert own profile" (INSERT, PERMISSIVE) roles={authenticated}
 //     WITH CHECK: (auth.uid() = id)
 //   Policy "Users can update own profile" (UPDATE, PERMISSIVE) roles={authenticated}
-//     USING: (auth.uid() = id)
-//     WITH CHECK: (auth.uid() = id)
-//   Policy "Users can view own profile" (SELECT, PERMISSIVE) roles={authenticated}
-//     USING: (auth.uid() = id)
+//     USING: ((auth.uid() = id) OR is_admin())
+//     WITH CHECK: ((auth.uid() = id) OR is_admin())
+//   Policy "Users can view profiles" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: ((auth.uid() = id) OR is_admin())
 
 // --- DATABASE FUNCTIONS ---
 // FUNCTION handle_new_user()
@@ -360,6 +364,22 @@ export const Constants = {
 //     VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'name')
 //     ON CONFLICT (id) DO NOTHING;
 //     RETURN NEW;
+//   END;
+//   $function$
+//
+// FUNCTION is_admin()
+//   CREATE OR REPLACE FUNCTION public.is_admin()
+//    RETURNS boolean
+//    LANGUAGE plpgsql
+//    SECURITY DEFINER
+//    SET search_path TO 'public'
+//   AS $function$
+//   BEGIN
+//     RETURN EXISTS (
+//       SELECT 1
+//       FROM profiles
+//       WHERE id = auth.uid() AND is_admin = true
+//     );
 //   END;
 //   $function$
 //
