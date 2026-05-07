@@ -104,22 +104,42 @@ export default function Generator() {
             <CardTitle className="text-lg">Dados Principais</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>Tipo de Documento</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(v) => setFormData((p) => ({ ...p, type: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receipt">Recibo Simples</SelectItem>
-                  <SelectItem value="promissory">Nota Promissória</SelectItem>
-                  <SelectItem value="budget">Orçamento</SelectItem>
-                  <SelectItem value="service_order">Ordem de Serviço</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant={formData.type === 'receipt' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'receipt' }))}
+                  className="w-full"
+                  size="sm"
+                >
+                  Recibo
+                </Button>
+                <Button
+                  variant={formData.type === 'promissory' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'promissory' }))}
+                  className="w-full"
+                  size="sm"
+                >
+                  Promissória
+                </Button>
+                <Button
+                  variant={formData.type === 'budget' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'budget' }))}
+                  className="w-full"
+                  size="sm"
+                >
+                  Orçamento
+                </Button>
+                <Button
+                  variant={formData.type === 'service_order' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'service_order' }))}
+                  className="w-full"
+                  size="sm"
+                >
+                  Ordem de Serviço
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Valor (R$)</Label>
