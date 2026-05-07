@@ -6,10 +6,12 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   isAdmin: boolean
+  profile: any
   signUp: (email: string, password: string, name: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<{ error: any }>
   loading: boolean
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,14 +26,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchProfile = async (userId: string) => {
-      const { data } = await supabase.from('profiles').select('is_admin').eq('id', userId).single()
-      setIsAdmin(!!data?.is_admin)
-    }
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    setIsAdmin(!!data?.is_admin)
+    setProfile(data)
+  }
 
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id)
+    }
+  }
+
+  useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -41,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchProfile(session.user.id).then(() => setLoading(false))
       } else {
         setIsAdmin(false)
+        setProfile(null)
         setLoading(false)
       }
     })
@@ -52,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         fetchProfile(session.user.id).then(() => setLoading(false))
       } else {
         setIsAdmin(false)
+        setProfile(null)
         setLoading(false)
       }
     })
@@ -82,7 +94,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, signUp, signIn, signOut, loading }}>
+    <AuthContext.Provider
+      value={{ user, session, isAdmin, profile, signUp, signIn, signOut, loading, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   )

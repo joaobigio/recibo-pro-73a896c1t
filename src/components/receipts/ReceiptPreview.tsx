@@ -1,6 +1,7 @@
 import { formatCurrency, formatDate } from '@/lib/format'
 import { numeroPorExtenso } from '@/lib/extenso'
 import { generatePixPayload } from '@/lib/pix'
+import { useAuth } from '@/hooks/use-auth'
 
 interface ReceiptPreviewProps {
   data: {
@@ -19,6 +20,8 @@ interface ReceiptPreviewProps {
 }
 
 export function ReceiptPreview({ data }: ReceiptPreviewProps) {
+  const { profile } = useAuth()
+
   const pixPayload =
     data.showPix && data.issuerPixKey && data.amount > 0
       ? generatePixPayload(data.issuerPixKey, data.amount, data.issuerName || 'Emissor')
@@ -36,13 +39,22 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] flex flex-col justify-between"
+      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] flex flex-col justify-between relative"
     >
       <div>
-        <div className="text-center border-b-2 border-gray-200 pb-6 mb-8 flex justify-between items-center">
-          <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">
-            {documentTitle}
-          </h2>
+        <div className="border-b-2 border-gray-200 pb-6 mb-8 flex justify-between items-start">
+          <div className="flex flex-col gap-4">
+            {profile?.logo_url && (
+              <img
+                src={profile.logo_url}
+                alt="Logo do Emissor"
+                className="h-16 w-auto object-contain object-left"
+              />
+            )}
+            <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">
+              {documentTitle}
+            </h2>
+          </div>
           <div className="bg-gray-100 px-6 py-2 rounded font-semibold text-xl">
             {formatCurrency(data.amount)}
           </div>

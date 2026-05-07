@@ -367,6 +367,17 @@ export const Constants = {
 //   END;
 //   $function$
 //
+// FUNCTION handle_updated_at()
+//   CREATE OR REPLACE FUNCTION public.handle_updated_at()
+//    RETURNS trigger
+//    LANGUAGE plpgsql
+//   AS $function$
+//   BEGIN
+//     NEW.updated_at = NOW();
+//     RETURN NEW;
+//   END;
+//   $function$
+//
 // FUNCTION is_admin()
 //   CREATE OR REPLACE FUNCTION public.is_admin()
 //    RETURNS boolean
@@ -377,7 +388,7 @@ export const Constants = {
 //   BEGIN
 //     RETURN EXISTS (
 //       SELECT 1
-//       FROM profiles
+//       FROM public.profiles
 //       WHERE id = auth.uid() AND is_admin = true
 //     );
 //   END;
@@ -414,3 +425,17 @@ export const Constants = {
 //   END;
 //   $function$
 //
+
+// --- TRIGGERS ---
+// Table: clients
+//   tr_clients_updated_at: CREATE TRIGGER tr_clients_updated_at BEFORE UPDATE ON public.clients FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
+// Table: documents
+//   tr_documents_updated_at: CREATE TRIGGER tr_documents_updated_at BEFORE UPDATE ON public.documents FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
+// Table: profiles
+//   tr_profiles_updated_at: CREATE TRIGGER tr_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
+
+// --- INDEXES ---
+// Table: clients
+//   CREATE INDEX idx_clients_user_id ON public.clients USING btree (user_id)
+// Table: documents
+//   CREATE INDEX idx_documents_user_id ON public.documents USING btree (user_id)

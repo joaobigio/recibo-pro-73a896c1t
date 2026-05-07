@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
-import { LogOut, LayoutDashboard, FileText, Users, ShieldAlert } from 'lucide-react'
+import { LogOut, LayoutDashboard, FileText, Users, ShieldAlert, Settings } from 'lucide-react'
 
 export default function Layout() {
   const { user, loading, isAdmin, signOut } = useAuth()
@@ -52,6 +52,15 @@ export default function Layout() {
               Meus Clientes
             </Button>
           </Link>
+          <Link to="/configuracoes">
+            <Button
+              variant={location.pathname === '/configuracoes' ? 'secondary' : 'ghost'}
+              className="w-full justify-start"
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              Configurações
+            </Button>
+          </Link>
 
           {isAdmin && (
             <>
@@ -80,7 +89,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto h-screen print:p-0 print:h-auto">
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto h-screen print:p-0 print:h-auto print:overflow-visible">
         <Outlet />
       </main>
     </div>
