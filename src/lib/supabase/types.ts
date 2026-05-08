@@ -339,13 +339,21 @@ export const Constants = {
 //   Policy "Users can manage their clients" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = user_id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
+//   Policy "Users can manage their own clients" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = user_id)
 // Table: documents
+//   Policy "Admins can view all documents" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: is_admin()
 //   Policy "Users can manage their documents" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = user_id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
+//   Policy "Users can manage their own documents" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = user_id)
 // Table: profiles
 //   Policy "Users can insert own profile" (INSERT, PERMISSIVE) roles={authenticated}
 //     WITH CHECK: (auth.uid() = id)
+//   Policy "Users can manage their own profiles" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = id)
 //   Policy "Users can update own profile" (UPDATE, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = id) OR is_admin())

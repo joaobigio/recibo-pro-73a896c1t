@@ -29,6 +29,9 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
 
   const titles: Record<string, string> = {
     receipt: 'Recibo',
+    third_party: 'Recibo para Terceiros',
+    items: 'Recibo',
+    rent: 'Recibo de Aluguel',
     promissory: 'Nota Promissória',
     budget: 'Orçamento',
     service_order: 'Ordem de Serviço',
@@ -84,7 +87,10 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
             </p>
           )}
 
-          {documentType === 'receipt' && (
+          {(documentType === 'receipt' ||
+            documentType === 'items' ||
+            documentType === 'third_party' ||
+            documentType === 'rent') && (
             <p>
               Recebi(emos) de{' '}
               <strong className="font-semibold uppercase">
@@ -100,6 +106,7 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
               </strong>
               , referente a{' '}
               <strong className="font-semibold">
+                {documentType === 'rent' ? 'aluguel do imóvel localizado em: ' : ''}
                 {data.description ||
                   '________________________________________________________________'}
               </strong>

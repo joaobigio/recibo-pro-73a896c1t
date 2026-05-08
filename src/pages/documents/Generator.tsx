@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import { SignaturePad } from '@/components/SignaturePad'
 import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
+import { useSearchParams } from 'react-router-dom'
 import { getProfile, Profile } from '@/services/profiles'
 import { getClients, Client } from '@/services/clients'
 import { createDocument } from '@/services/documents'
@@ -23,12 +24,14 @@ import { Printer, Share2, Save } from 'lucide-react'
 
 export default function Generator() {
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const initialType = searchParams.get('type') || 'receipt'
   const [profile, setProfile] = useState<Profile | null>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [saving, setSaving] = useState(false)
 
   const [formData, setFormData] = useState({
-    type: 'receipt',
+    type: initialType,
     amount: 0,
     date: new Date().toISOString().split('T')[0],
     clientName: '',
@@ -48,6 +51,13 @@ export default function Generator() {
       setFormData((p) => ({ ...p, clientDocument: found.document || '' }))
     }
   }
+
+  useEffect(() => {
+    const type = searchParams.get('type')
+    if (type) {
+      setFormData((p) => ({ ...p, type }))
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (user) {
@@ -106,19 +116,38 @@ export default function Generator() {
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <Label>Tipo de Documento</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 <Button
                   variant={formData.type === 'receipt' ? 'default' : 'outline'}
                   onClick={() => setFormData((p) => ({ ...p, type: 'receipt' }))}
-                  className="w-full"
                   size="sm"
                 >
-                  Recibo
+                  Tradicional
+                </Button>
+                <Button
+                  variant={formData.type === 'third_party' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'third_party' }))}
+                  size="sm"
+                >
+                  Terceiros
+                </Button>
+                <Button
+                  variant={formData.type === 'items' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'items' }))}
+                  size="sm"
+                >
+                  Com Itens
+                </Button>
+                <Button
+                  variant={formData.type === 'rent' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p) => ({ ...p, type: 'rent' }))}
+                  size="sm"
+                >
+                  Aluguel
                 </Button>
                 <Button
                   variant={formData.type === 'promissory' ? 'default' : 'outline'}
                   onClick={() => setFormData((p) => ({ ...p, type: 'promissory' }))}
-                  className="w-full"
                   size="sm"
                 >
                   Promissória
@@ -126,18 +155,9 @@ export default function Generator() {
                 <Button
                   variant={formData.type === 'budget' ? 'default' : 'outline'}
                   onClick={() => setFormData((p) => ({ ...p, type: 'budget' }))}
-                  className="w-full"
                   size="sm"
                 >
                   Orçamento
-                </Button>
-                <Button
-                  variant={formData.type === 'service_order' ? 'default' : 'outline'}
-                  onClick={() => setFormData((p) => ({ ...p, type: 'service_order' }))}
-                  className="w-full"
-                  size="sm"
-                >
-                  Ordem de Serviço
                 </Button>
               </div>
             </div>

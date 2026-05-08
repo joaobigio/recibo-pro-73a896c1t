@@ -12,6 +12,7 @@ import Clients from './pages/clients/Clients'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Settings from './pages/settings/Settings'
 import NotFound from './pages/NotFound'
+import ComingSoon from './pages/ComingSoon'
 
 const App = () => (
   <BrowserRouter future={{ v7_startTransition: false, v7_relativeSplatPath: false }}>
@@ -26,6 +27,12 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/gerador" element={<Generator />} />
             <Route path="/clientes" element={<Clients />} />
+            <Route path="/produtos" element={<ComingSoon />} />
+            <Route path="/propriedades" element={<ComingSoon />} />
+            <Route path="/descricoes" element={<ComingSoon />} />
+            <Route path="/termos" element={<ComingSoon />} />
+            <Route path="/relatorios" element={<ComingSoon />} />
+            <Route path="/ajuda" element={<ComingSoon />} />
             <Route path="/configuracoes" element={<Settings />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>
