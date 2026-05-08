@@ -30,8 +30,9 @@ export default function Generator() {
   const [clients, setClients] = useState<Client[]>([])
   const [saving, setSaving] = useState(false)
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     type: initialType,
+    template: 'classic',
     amount: 0,
     date: new Date().toISOString().split('T')[0],
     clientName: '',
@@ -158,6 +159,35 @@ export default function Generator() {
                   size="sm"
                 >
                   Orçamento
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <Label>Layout do Documento</Label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant={formData.template === 'classic' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p: any) => ({ ...p, template: 'classic' }))}
+                  size="sm"
+                  className={formData.template === 'classic' ? 'bg-slate-800 text-white' : ''}
+                >
+                  Clássico
+                </Button>
+                <Button
+                  variant={formData.template === 'modern' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p: any) => ({ ...p, template: 'modern' }))}
+                  size="sm"
+                  className={formData.template === 'modern' ? 'bg-slate-800 text-white' : ''}
+                >
+                  Moderno
+                </Button>
+                <Button
+                  variant={formData.template === 'minimalist' ? 'default' : 'outline'}
+                  onClick={() => setFormData((p: any) => ({ ...p, template: 'minimalist' }))}
+                  size="sm"
+                  className={formData.template === 'minimalist' ? 'bg-slate-800 text-white' : ''}
+                >
+                  Minimalista
                 </Button>
               </div>
             </div>

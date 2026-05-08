@@ -26,6 +26,7 @@ export default function ThirdPartyReceiptForm() {
   const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState({
+    template: 'classic',
     amount: '',
     date: new Date().toISOString().split('T')[0],
     client_id: '',
@@ -86,6 +87,7 @@ export default function ThirdPartyReceiptForm() {
         amount: amountParsed,
         client_id: formData.client_id,
         data: {
+          template: formData.template,
           amount: amountParsed,
           date: formData.date,
           clientName: client?.name || '',
@@ -165,6 +167,36 @@ export default function ThirdPartyReceiptForm() {
               value={formData.date}
               onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
             />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Layout do Recibo</Label>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant={formData.template === 'classic' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'classic' }))}
+              className={formData.template === 'classic' ? 'bg-slate-800 text-white' : ''}
+            >
+              Clássico
+            </Button>
+            <Button
+              type="button"
+              variant={formData.template === 'modern' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'modern' }))}
+              className={formData.template === 'modern' ? 'bg-slate-800 text-white' : ''}
+            >
+              Moderno
+            </Button>
+            <Button
+              type="button"
+              variant={formData.template === 'minimalist' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'minimalist' }))}
+              className={formData.template === 'minimalist' ? 'bg-slate-800 text-white' : ''}
+            >
+              Minimalista
+            </Button>
           </div>
         </div>
 

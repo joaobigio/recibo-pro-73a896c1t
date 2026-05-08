@@ -131,6 +131,47 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          price: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          price?: number
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'products_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -346,6 +387,15 @@ export const Constants = {
 //   data: jsonb (not null, default: '{}'::jsonb)
 //   created_at: timestamp with time zone (not null, default: now())
 //   updated_at: timestamp with time zone (not null, default: now())
+// Table: products
+//   id: uuid (not null, default: gen_random_uuid())
+//   user_id: uuid (not null)
+//   name: text (not null)
+//   description: text (nullable)
+//   price: numeric (not null, default: 0)
+//   type: text (not null, default: 'product'::text)
+//   created_at: timestamp with time zone (not null, default: now())
+//   updated_at: timestamp with time zone (not null, default: now())
 // Table: profiles
 //   id: uuid (not null)
 //   email: text (not null)
@@ -366,6 +416,9 @@ export const Constants = {
 //   FOREIGN KEY documents_client_id_fkey: FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
 //   PRIMARY KEY documents_pkey: PRIMARY KEY (id)
 //   FOREIGN KEY documents_user_id_fkey: FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
+// Table: products
+//   PRIMARY KEY products_pkey: PRIMARY KEY (id)
+//   FOREIGN KEY products_user_id_fkey: FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
 // Table: profiles
 //   FOREIGN KEY profiles_id_fkey: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 //   PRIMARY KEY profiles_pkey: PRIMARY KEY (id)
@@ -385,6 +438,10 @@ export const Constants = {
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 //   Policy "Users can manage their own documents" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: (auth.uid() = user_id)
+// Table: products
+//   Policy "Users can manage their products" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: ((auth.uid() = user_id) OR is_admin())
+//     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 // Table: profiles
 //   Policy "Users can insert own profile" (INSERT, PERMISSIVE) roles={authenticated}
 //     WITH CHECK: (auth.uid() = id)
@@ -475,6 +532,8 @@ export const Constants = {
 //   tr_clients_updated_at: CREATE TRIGGER tr_clients_updated_at BEFORE UPDATE ON public.clients FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
 // Table: documents
 //   tr_documents_updated_at: CREATE TRIGGER tr_documents_updated_at BEFORE UPDATE ON public.documents FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
+// Table: products
+//   tr_products_updated_at: CREATE TRIGGER tr_products_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
 // Table: profiles
 //   tr_profiles_updated_at: CREATE TRIGGER tr_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
 
@@ -483,3 +542,5 @@ export const Constants = {
 //   CREATE INDEX idx_clients_user_id ON public.clients USING btree (user_id)
 // Table: documents
 //   CREATE INDEX idx_documents_user_id ON public.documents USING btree (user_id)
+// Table: products
+//   CREATE INDEX idx_products_user_id ON public.products USING btree (user_id)
