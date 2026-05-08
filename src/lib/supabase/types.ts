@@ -12,34 +12,61 @@ export type Database = {
       clients: {
         Row: {
           address: string | null
+          cep: string | null
+          city: string | null
+          complement: string | null
           created_at: string
           document: string | null
           email: string | null
           id: string
           name: string
+          neighborhood: string | null
+          number: string | null
           phone: string | null
+          pix_key: string | null
+          pix_key_type: string | null
+          state: string | null
+          street: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
+          cep?: string | null
+          city?: string | null
+          complement?: string | null
           created_at?: string
           document?: string | null
           email?: string | null
           id?: string
           name: string
+          neighborhood?: string | null
+          number?: string | null
           phone?: string | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          state?: string | null
+          street?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
+          cep?: string | null
+          city?: string | null
+          complement?: string | null
           created_at?: string
           document?: string | null
           email?: string | null
           id?: string
           name?: string
+          neighborhood?: string | null
+          number?: string | null
           phone?: string | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          state?: string | null
+          street?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -300,6 +327,15 @@ export const Constants = {
 //   address: text (nullable)
 //   created_at: timestamp with time zone (not null, default: now())
 //   updated_at: timestamp with time zone (not null, default: now())
+//   pix_key_type: text (nullable)
+//   pix_key: text (nullable)
+//   cep: text (nullable)
+//   street: text (nullable)
+//   number: text (nullable)
+//   complement: text (nullable)
+//   neighborhood: text (nullable)
+//   city: text (nullable)
+//   state: text (nullable)
 // Table: documents
 //   id: uuid (not null, default: gen_random_uuid())
 //   user_id: uuid (not null)

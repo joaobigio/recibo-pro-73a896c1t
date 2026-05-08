@@ -9,8 +9,11 @@ import Index from './pages/Index'
 import Login from './pages/auth/Login'
 import Generator from './pages/documents/Generator'
 import ThirdPartyReceiptForm from './pages/documents/ThirdPartyReceiptForm'
+import DocumentList from './pages/documents/DocumentList'
 import Clients from './pages/clients/Clients'
 import ClientForm from './pages/clients/ClientForm'
+import Products from './pages/products/Products'
+import ProductForm from './pages/products/ProductForm'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Settings from './pages/settings/Settings'
 import NotFound from './pages/NotFound'
@@ -31,8 +34,11 @@ const App = () => (
             <Route path="/clientes" element={<Clients />} />
             <Route path="/clientes/cadastrar" element={<ClientForm />} />
             <Route path="/clientes/:id/editar" element={<ClientForm />} />
+            <Route path="/documentos" element={<DocumentList />} />
             <Route path="/recibos-terceiros/cadastrar" element={<ThirdPartyReceiptForm />} />
-            <Route path="/produtos" element={<ComingSoon />} />
+            <Route path="/produtos" element={<Products />} />
+            <Route path="/produtos/cadastrar" element={<ProductForm />} />
+            <Route path="/produtos/:id/editar" element={<ProductForm />} />
             <Route path="/propriedades" element={<ComingSoon />} />
             <Route path="/descricoes" element={<ComingSoon />} />
             <Route path="/termos" element={<ComingSoon />} />

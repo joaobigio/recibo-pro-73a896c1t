@@ -140,6 +140,13 @@ export default function Layout() {
             >
               Orçamentos
             </NavItem>
+            <NavItem
+              to="/documentos"
+              icon={FileText}
+              isActive={location.pathname === '/documentos'}
+            >
+              Histórico de Documentos
+            </NavItem>
           </div>
 
           <div className="space-y-1.5">
