@@ -11,11 +11,14 @@ interface ReceiptPreviewProps {
     clientName: string
     clientDocument: string
     description: string
-    issuerName: string
-    issuerDocument: string
-    issuerPixKey: string
-    showPix: boolean
-    signature: string | null
+    issuerName?: string
+    issuerDocument?: string
+    issuerPixKey?: string
+    showPix?: boolean
+    signature?: string | null
+    referencePrefix?: string
+    paymentMethods?: { type: string }[]
+    observations?: string
   }
 }
 
@@ -104,7 +107,7 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
               <strong className="font-semibold uppercase">
                 {numeroPorExtenso(data.amount) || '________________________________'}
               </strong>
-              , referente a{' '}
+              , referente {data.referencePrefix || 'a'}{' '}
               <strong className="font-semibold">
                 {documentType === 'rent' ? 'aluguel do imóvel localizado em: ' : ''}
                 {data.description ||
@@ -167,6 +170,21 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
             </p>
           )}
           {documentType === 'budget' && <p>Aguardamos aprovação para início dos trabalhos.</p>}
+
+          {data.observations && (
+            <div className="mt-4 pt-4 border-t border-dashed">
+              <p className="text-sm font-medium">Observações:</p>
+              <p className="text-sm">{data.observations}</p>
+            </div>
+          )}
+
+          {data.paymentMethods && data.paymentMethods.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-medium">
+                Forma de Pagamento: {data.paymentMethods.map((m: any) => m.type).join(', ')}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

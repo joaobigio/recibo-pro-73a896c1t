@@ -8,7 +8,9 @@ import Layout from './components/Layout'
 import Index from './pages/Index'
 import Login from './pages/auth/Login'
 import Generator from './pages/documents/Generator'
+import ThirdPartyReceiptForm from './pages/documents/ThirdPartyReceiptForm'
 import Clients from './pages/clients/Clients'
+import ClientForm from './pages/clients/ClientForm'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Settings from './pages/settings/Settings'
 import NotFound from './pages/NotFound'
@@ -27,6 +29,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/gerador" element={<Generator />} />
             <Route path="/clientes" element={<Clients />} />
+            <Route path="/clientes/cadastrar" element={<ClientForm />} />
+            <Route path="/clientes/:id/editar" element={<ClientForm />} />
+            <Route path="/recibos-terceiros/cadastrar" element={<ThirdPartyReceiptForm />} />
             <Route path="/produtos" element={<ComingSoon />} />
             <Route path="/propriedades" element={<ComingSoon />} />
             <Route path="/descricoes" element={<ComingSoon />} />

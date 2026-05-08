@@ -13,25 +13,16 @@ import {
 } from '@/components/ui/dialog'
 import { getClients, createClient, updateClient, deleteClient, Client } from '@/services/clients'
 import { useAuth } from '@/hooks/use-auth'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react'
 
 export default function Clients() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-
-  const [isOpen, setIsOpen] = useState(false)
-  const [editingClient, setEditingClient] = useState<Client | null>(null)
-
-  const [formData, setFormData] = useState({
-    name: '',
-    document: '',
-    email: '',
-    phone: '',
-    address: '',
-  })
 
   useEffect(() => {
     loadClients()
@@ -42,44 +33,6 @@ export default function Clients() {
     const { data } = await getClients()
     if (data) setClients(data)
     setLoading(false)
-  }
-
-  const handleOpenDialog = (client?: Client) => {
-    if (client) {
-      setEditingClient(client)
-      setFormData({
-        name: client.name,
-        document: client.document || '',
-        email: client.email || '',
-        phone: client.phone || '',
-        address: client.address || '',
-      })
-    } else {
-      setEditingClient(null)
-      setFormData({ name: '', document: '', email: '', phone: '', address: '' })
-    }
-    setIsOpen(true)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
-
-    try {
-      if (editingClient) {
-        const { error } = await updateClient(editingClient.id, formData)
-        if (error) throw error
-        toast.success('Cliente atualizado com sucesso!')
-      } else {
-        const { error } = await createClient({ ...formData, user_id: user.id })
-        if (error) throw error
-        toast.success('Cliente cadastrado com sucesso!')
-      }
-      setIsOpen(false)
-      loadClients()
-    } catch (error) {
-      toast.error('Erro ao salvar cliente.')
-    }
   }
 
   const handleDelete = async (id: string) => {
@@ -109,7 +62,7 @@ export default function Clients() {
             Gerencie sua base de clientes para facilitar a emissão de recibos.
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()}>
+        <Button onClick={() => navigate('/clientes/cadastrar')}>
           <Plus className="h-4 w-4 mr-2" />
           Novo Cliente
         </Button>
@@ -162,7 +115,7 @@ export default function Clients() {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => handleOpenDialog(client)}
+                        onClick={() => navigate(`/clientes/${client.id}/editar`)}
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
@@ -182,72 +135,6 @@ export default function Clients() {
           </div>
         </CardContent>
       </Card>
-
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <form onSubmit={handleSubmit}>
-            <DialogHeader>
-              <DialogTitle>{editingClient ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
-              <DialogDescription>
-                Preencha os dados do cliente para utilizá-los rapidamente na emissão de documentos.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo / Razão Social *</Label>
-                <Input
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="document">CPF ou CNPJ</Label>
-                <Input
-                  id="document"
-                  placeholder="Apenas números ou formato padrão"
-                  value={formData.document}
-                  onChange={(e) => setFormData((p) => ({ ...p, document: e.target.value }))}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Telefone / WhatsApp</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Endereço Completo</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">Salvar</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

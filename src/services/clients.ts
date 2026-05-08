@@ -8,6 +8,15 @@ export interface Client {
   email?: string | null
   phone?: string | null
   address?: string | null
+  pix_key_type?: string | null
+  pix_key?: string | null
+  cep?: string | null
+  street?: string | null
+  number?: string | null
+  complement?: string | null
+  neighborhood?: string | null
+  city?: string | null
+  state?: string | null
   created_at: string
 }
 
