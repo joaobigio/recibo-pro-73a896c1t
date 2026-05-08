@@ -19,6 +19,7 @@ import {
   HelpCircle,
   ChevronUp,
   UserCircle,
+  CalendarClock,
 } from 'lucide-react'
 
 function NavItem({
@@ -146,6 +147,13 @@ export default function Layout() {
               isActive={location.pathname === '/documentos'}
             >
               Histórico de Documentos
+            </NavItem>
+            <NavItem
+              to="/agendamentos"
+              icon={CalendarClock}
+              isActive={location.pathname.startsWith('/agendamentos')}
+            >
+              Recibos Programados
             </NavItem>
           </div>
 

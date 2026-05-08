@@ -97,6 +97,7 @@ export default function Products() {
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Tipo</TableHead>
+              <TableHead>Categoria</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead className="text-right">Preço (R$)</TableHead>
               <TableHead className="w-[100px] text-center">Ações</TableHead>
@@ -105,13 +106,13 @@ export default function Products() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   Carregando catálogo...
                 </TableCell>
               </TableRow>
             ) : filteredProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   Nenhum item encontrado.
                 </TableCell>
               </TableRow>
@@ -123,6 +124,18 @@ export default function Products() {
                     <Badge variant={product.type === 'service' ? 'secondary' : 'outline'}>
                       {product.type === 'service' ? 'Serviço' : 'Produto'}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {product.category ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 font-normal"
+                      >
+                        {product.category}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-[300px] truncate">
                     {product.description || '-'}

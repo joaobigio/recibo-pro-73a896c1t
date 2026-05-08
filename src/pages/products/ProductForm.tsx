@@ -22,6 +22,7 @@ export default function ProductForm() {
     description: '',
     price: '',
     type: 'product' as 'product' | 'service',
+    category: '',
   })
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function ProductForm() {
         description: data.description || '',
         price: data.price.toString(),
         type: data.type,
+        category: data.category || '',
       })
     } else {
       toast.error('Item não encontrado')
@@ -59,6 +61,7 @@ export default function ProductForm() {
       description: formData.description,
       price: parseFloat(formData.price.replace(',', '.')) || 0,
       type: formData.type,
+      category: formData.category,
     }
 
     try {
@@ -143,6 +146,15 @@ export default function ProductForm() {
                   value={formData.price}
                   onChange={(e) => setFormData((p) => ({ ...p, price: e.target.value }))}
                   placeholder="0.00"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-3">
+                <Label htmlFor="category">Categoria</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData((p) => ({ ...p, category: e.target.value }))}
+                  placeholder="Ex: Manutenção, Eletrônicos, Consultoria..."
                 />
               </div>
             </div>

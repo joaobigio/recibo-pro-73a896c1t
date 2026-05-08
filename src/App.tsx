@@ -14,6 +14,8 @@ import Clients from './pages/clients/Clients'
 import ClientForm from './pages/clients/ClientForm'
 import Products from './pages/products/Products'
 import ProductForm from './pages/products/ProductForm'
+import RecurringList from './pages/recurring/RecurringList'
+import RecurringForm from './pages/recurring/RecurringForm'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Settings from './pages/settings/Settings'
 import NotFound from './pages/NotFound'
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="/produtos" element={<Products />} />
             <Route path="/produtos/cadastrar" element={<ProductForm />} />
             <Route path="/produtos/:id/editar" element={<ProductForm />} />
+            <Route path="/agendamentos" element={<RecurringList />} />
+            <Route path="/agendamentos/novo" element={<RecurringForm />} />
             <Route path="/propriedades" element={<ComingSoon />} />
             <Route path="/descricoes" element={<ComingSoon />} />
             <Route path="/termos" element={<ComingSoon />} />

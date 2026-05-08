@@ -7,6 +7,7 @@ export interface Product {
   description?: string
   price: number
   type: 'product' | 'service'
+  category?: string
   created_at: string
 }
 
