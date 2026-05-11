@@ -10,73 +10,68 @@ export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTempla
   return (
     <div
       id="print-area"
-      className="bg-white border md:border-2 md:border-slate-800 rounded-xl overflow-hidden max-w-3xl mx-auto text-black print:border-none print:p-0 w-full min-h-[600px] flex flex-col relative font-sans shadow-xl print:shadow-none"
+      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] flex flex-col justify-between relative"
     >
-      <div className="bg-slate-900 text-white p-8 md:p-10 flex justify-between items-center print:bg-slate-900 print:text-white print:border-b-4 print:border-slate-900">
-        <div className="flex flex-col gap-2">
-          {profile?.logo_url && (
-            <img
-              src={profile.logo_url}
-              alt="Logo do Emissor"
-              className="h-28 w-auto max-w-[320px] object-contain object-left mb-2 filter brightness-0 invert"
-            />
-          )}
-          <h2 className="text-2xl font-bold uppercase tracking-widest">{documentTitle}</h2>
-        </div>
-        <div className="text-right">
-          <div className="text-xs text-slate-400 uppercase tracking-widest mb-1 font-semibold">
-            Valor Total
+      <div>
+        <div className="border-b-2 border-gray-200 pb-6 mb-8 flex justify-between items-start">
+          <div className="flex flex-col gap-4">
+            {profile?.logo_url && (
+              <img
+                src={profile.logo_url}
+                alt="Logo do Emissor"
+                className="h-32 w-auto max-w-[320px] object-contain object-left"
+              />
+            )}
+            <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">
+              {documentTitle}
+            </h2>
           </div>
-          <div className="text-3xl font-bold text-white">{formatCurrency(data.amount)}</div>
+          <div className="bg-gray-100 px-6 py-2 rounded font-semibold text-xl">
+            {formatCurrency(data.amount)}
+          </div>
         </div>
+
+        <ReceiptContent data={data} documentType={documentType} documentTitle={documentTitle} />
       </div>
 
-      <div className="p-8 md:p-10 flex-1 flex flex-col justify-between bg-slate-50/50 print:bg-transparent">
-        <ReceiptContent
-          data={data}
-          documentType={documentType}
-          documentTitle={documentTitle}
-          className="space-y-6 text-lg leading-relaxed text-slate-800 text-justify"
-        />
-
-        <div className="mt-16 pt-8 border-t border-slate-200 flex justify-between items-end">
-          <div className="text-center w-1/2 md:w-2/5">
-            <div className="border-b-2 border-slate-800 mb-3 mx-4 h-16 flex items-end justify-center relative">
-              {data.signature && (
-                <img
-                  src={data.signature}
-                  alt="Assinatura"
-                  className="absolute bottom-0 h-16 object-contain"
-                />
-              )}
-            </div>
-            <p className="font-bold text-slate-900">{data.issuerName || 'Nome do Emissor'}</p>
-            <p className="text-sm text-slate-500">
-              CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
-            </p>
-          </div>
-
-          <div className="text-right flex flex-col items-end w-1/2 md:w-2/5">
-            <div className="bg-slate-100 px-4 py-2 rounded-md mb-4 inline-block print:bg-transparent print:px-0">
-              <span className="text-slate-500 text-sm mr-2 uppercase font-semibold">Data</span>
-              <span className="font-bold text-slate-800">
-                {data.date ? formatDate(data.date) : '____/____/______'}
-              </span>
-            </div>
-
-            {pixPayload && (
-              <div className="mt-2 flex flex-col items-center bg-white p-3 rounded-lg shadow-sm border border-slate-100 max-w-[180px] print:shadow-none print:border">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(pixPayload)}`}
-                  alt="PIX QR Code"
-                  className="w-20 h-20 mb-2"
-                />
-                <span className="text-[10px] font-bold text-slate-800 uppercase mb-1">
-                  Pague via PIX
-                </span>
-              </div>
+      <div className="mt-16 flex justify-between items-end">
+        <div className="text-center w-3/5">
+          <div className="border-b border-black mb-2 mx-8 h-16 flex items-end justify-center relative">
+            {data.signature && (
+              <img
+                src={data.signature}
+                alt="Assinatura"
+                className="absolute bottom-0 h-16 object-contain"
+              />
             )}
           </div>
+          <p className="font-bold">{data.issuerName || 'Nome do Emissor'}</p>
+          <p className="text-sm text-gray-600">
+            CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
+          </p>
+        </div>
+
+        <div className="text-right flex flex-col items-end w-2/5">
+          <p className="mb-4 text-gray-700">
+            Data:{' '}
+            <span className="font-medium">
+              {data.date ? formatDate(data.date) : '____/____/______'}
+            </span>
+          </p>
+
+          {pixPayload && (
+            <div className="mt-4 flex flex-col items-center border p-3 rounded-lg bg-gray-50 max-w-[200px]">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(pixPayload)}`}
+                alt="PIX QR Code"
+                className="w-24 h-24 mb-2"
+              />
+              <span className="text-xs font-bold text-gray-800 uppercase mb-1">Pague com PIX</span>
+              <p className="text-[8px] text-gray-500 break-all leading-tight text-center select-all">
+                {pixPayload}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
