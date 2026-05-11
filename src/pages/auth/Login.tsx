@@ -19,8 +19,10 @@ export default function Login() {
   const { signIn, signUp, session } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+
+  // Pre-fill with seeded test user credentials for immediate access
+  const [email, setEmail] = useState('joaozinhosantoss@icloud.com')
+  const [password, setPassword] = useState('Skip@Pass')
   const [name, setName] = useState('')
 
   if (session) {
@@ -33,16 +35,40 @@ export default function Login() {
 
     try {
       if (isLogin) {
-        const { error } = await signIn(email, password)
+        const { error } = await signIn(email.trim(), password)
         if (error) throw error
         toast.success('Bem-vindo de volta!')
       } else {
-        const { error } = await signUp(email, password, name)
+        const { error, data } = await signUp(email.trim(), password, name.trim())
         if (error) throw error
-        toast.success('Conta criada com sucesso! Verifique seu e-mail.')
+
+        if (data?.session) {
+          toast.success('Conta criada com sucesso!')
+        } else {
+          toast.success(
+            'Conta criada! Por favor, verifique seu e-mail para confirmar o cadastro.',
+            {
+              duration: 6000,
+            },
+          )
+          setIsLogin(true)
+        }
       }
     } catch (error: any) {
-      toast.error(error.message || 'Ocorreu um erro')
+      let message = error.message || 'Ocorreu um erro'
+
+      // Translate generic Supabase auth errors to Portuguese
+      if (message.includes('Password should be at least')) {
+        message = 'A senha deve ter pelo menos 6 caracteres.'
+      } else if (message.includes('User already registered')) {
+        message = 'Este e-mail já está cadastrado. Faça login.'
+      } else if (message.includes('Invalid login credentials')) {
+        message = 'E-mail ou senha incorretos.'
+      } else if (message.includes('Email not confirmed')) {
+        message = 'E-mail não confirmado. Verifique sua caixa de entrada.'
+      }
+
+      toast.error(message)
     } finally {
       setLoading(false)
     }

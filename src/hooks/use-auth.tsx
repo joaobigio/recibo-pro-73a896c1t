@@ -7,7 +7,7 @@ interface AuthContextType {
   session: Session | null
   isAdmin: boolean
   profile: any
-  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>
+  signUp: (email: string, password: string, name: string) => Promise<{ error: any; data?: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<{ error: any }>
   loading: boolean
@@ -30,9 +30,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
-    setIsAdmin(!!data?.is_admin)
-    setProfile(data)
+    let retries = 3
+    while (retries > 0) {
+      const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+      if (data) {
+        setIsAdmin(!!data.is_admin)
+        setProfile(data)
+        return
+      }
+      retries--
+      if (retries > 0) await new Promise((r) => setTimeout(r, 500))
+    }
   }
 
   const refreshProfile = async () => {
@@ -72,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -80,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         emailRedirectTo: `${window.location.origin}/`,
       },
     })
-    return { error }
+    return { data, error }
   }
 
   const signIn = async (email: string, password: string) => {
