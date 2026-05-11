@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from '@/lib/format'
+import { formatCurrency, formatDate, maskCpfCnpj } from '@/lib/format'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
 import { ReceiptContent } from '../ReceiptContent'
@@ -46,7 +46,9 @@ export function ClassicReceipt({ data, documentTitle, pixPayload }: ReceiptTempl
             )}
           </div>
           <p className="font-bold">{data.issuerName || 'Nome do Emissor'}</p>
-          <p className="text-sm text-gray-600">CPF/CNPJ: {data.issuerDocument || 'N/A'}</p>
+          <p className="text-sm text-gray-600">
+            CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
+          </p>
         </div>
 
         <div className="text-right flex flex-col items-end w-2/5">

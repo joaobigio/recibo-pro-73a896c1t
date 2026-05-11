@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from '@/lib/format'
+import { formatCurrency, formatDate, maskCpfCnpj } from '@/lib/format'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
 import { ReceiptContent } from '../ReceiptContent'
@@ -50,7 +50,7 @@ export function MinimalistReceipt({ data, documentTitle, pixPayload }: ReceiptTe
           {data.issuerName || 'NOME DO EMISSOR'}
         </p>
         <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">
-          CPF/CNPJ {data.issuerDocument || 'N/A'}
+          CPF/CNPJ {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
         </p>
         <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">
           {data.date ? formatDate(data.date) : '____/____/______'}

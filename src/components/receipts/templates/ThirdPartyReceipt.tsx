@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/lib/format'
+import { formatCurrency, maskCpfCnpj } from '@/lib/format'
 import { numeroPorExtenso } from '@/lib/extenso'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
@@ -62,7 +62,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
             </strong>
             , inscrit{isCNPJ ? 'a' : 'o'} no {docTypeLabel} nº{' '}
             <strong className="font-bold text-black">
-              {issuerDoc || '________________________'}
+              {issuerDoc ? maskCpfCnpj(issuerDoc) : '________________________'}
             </strong>
             , a importância de{' '}
             <strong className="font-bold lowercase text-black">
@@ -98,7 +98,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
             {data.clientName || 'NOME DO RECEBEDOR'}
           </p>
           <p className="text-gray-800 text-base">
-            CPF {data.clientDocument || '___________________'}
+            CPF {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '___________________'}
           </p>
         </div>
       </div>

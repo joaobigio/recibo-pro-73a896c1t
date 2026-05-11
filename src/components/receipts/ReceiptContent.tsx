@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/format'
+import { formatDate, maskCpfCnpj } from '@/lib/format'
 import { numeroPorExtenso } from '@/lib/extenso'
 import { ReceiptData } from './types'
 
@@ -50,7 +50,7 @@ export function ReceiptContent({
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
           <strong className="font-semibold">
-            {data.clientDocument || '________________________'}
+            {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           , a importância de{' '}
           <strong className="font-semibold uppercase">
@@ -74,7 +74,7 @@ export function ReceiptContent({
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
           <strong className="font-semibold">
-            {data.clientDocument || '________________________'}
+            {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           , no valor total de{' '}
           <strong className="font-semibold uppercase">
@@ -100,7 +100,7 @@ export function ReceiptContent({
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
           <strong className="font-semibold">
-            {data.clientDocument || '________________________'}
+            {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           , pelo valor acordado de{' '}
           <strong className="font-semibold uppercase">
