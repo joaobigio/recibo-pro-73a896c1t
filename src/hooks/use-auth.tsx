@@ -39,8 +39,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return
       }
       retries--
-      if (retries > 0) await new Promise((r) => setTimeout(r, 500))
+      if (retries > 0) await new Promise((r) => setTimeout(r, 1000))
     }
+
+    setIsAdmin(false)
+    setProfile(null)
   }
 
   const refreshProfile = async () => {
@@ -55,29 +58,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id).then(() => setLoading(false))
-      } else {
-        setIsAdmin(false)
-        setProfile(null)
-        setLoading(false)
-      }
+      setLoading(false)
     })
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id).then(() => setLoading(false))
-      } else {
-        setIsAdmin(false)
-        setProfile(null)
-        setLoading(false)
-      }
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      fetchProfile(user.id)
+    } else {
+      setIsAdmin(false)
+      setProfile(null)
+    }
+  }, [user])
 
   const signUp = async (email: string, password: string, name: string) => {
     const { data, error } = await supabase.auth.signUp({

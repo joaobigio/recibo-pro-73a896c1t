@@ -26,7 +26,7 @@ export default function Login() {
   const [name, setName] = useState('')
 
   if (session) {
-    return <Navigate to="/" />
+    return <Navigate to="/" replace />
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +46,8 @@ export default function Login() {
           toast.success('Conta criada com sucesso!')
         } else {
           // Attempt to login immediately since the backend auto-confirms users
+          // Add a small delay to allow the database trigger to commit the confirmation
+          await new Promise((resolve) => setTimeout(resolve, 500))
           const { error: signInError } = await signIn(email.trim(), password)
 
           if (!signInError) {

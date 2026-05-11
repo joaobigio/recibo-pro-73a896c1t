@@ -539,6 +539,18 @@ export const Constants = {
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 
 // --- DATABASE FUNCTIONS ---
+// FUNCTION auto_confirm_new_users()
+//   CREATE OR REPLACE FUNCTION public.auto_confirm_new_users()
+//    RETURNS trigger
+//    LANGUAGE plpgsql
+//    SECURITY DEFINER
+//   AS $function$
+//   BEGIN
+//     NEW.email_confirmed_at = COALESCE(NEW.email_confirmed_at, NOW());
+//     RETURN NEW;
+//   END;
+//   $function$
+//
 // FUNCTION handle_new_user()
 //   CREATE OR REPLACE FUNCTION public.handle_new_user()
 //    RETURNS trigger
