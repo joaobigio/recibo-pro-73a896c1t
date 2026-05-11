@@ -17,6 +17,7 @@ import { getClients, Client } from '@/services/clients'
 import { createDocument } from '@/services/documents'
 import { toast } from 'sonner'
 import { Plus, X, Loader2 } from 'lucide-react'
+import { maskTextCpfCnpj } from '@/lib/format'
 
 export default function ThirdPartyReceiptForm() {
   const navigate = useNavigate()
@@ -242,7 +243,9 @@ export default function ThirdPartyReceiptForm() {
             id="description"
             required
             value={formData.description}
-            onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, description: maskTextCpfCnpj(e.target.value) }))
+            }
             placeholder="Ex: Prestação de serviços..."
           />
         </div>
@@ -252,7 +255,9 @@ export default function ThirdPartyReceiptForm() {
           <Textarea
             id="observations"
             value={formData.observations}
-            onChange={(e) => setFormData((p) => ({ ...p, observations: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, observations: maskTextCpfCnpj(e.target.value) }))
+            }
             placeholder="Observações adicionais..."
             className="resize-none"
             rows={4}
