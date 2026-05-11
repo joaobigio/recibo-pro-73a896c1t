@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,12 +13,17 @@ import {
   CardFooter,
 } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Receipt } from 'lucide-react'
+import { Receipt, Loader2 } from 'lucide-react'
 
 export default function Login() {
   const { signIn, signUp, session, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
+
+  const from = location.state?.from?.pathname || '/'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -38,7 +43,7 @@ export default function Login() {
   }
 
   if (session) {
-    return <Navigate to="/" replace />
+    return <Navigate to={from} replace />
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,18 +55,21 @@ export default function Login() {
         const { error } = await signIn(email.trim(), password)
         if (error) throw error
         toast.success('Bem-vindo de volta!')
+        navigate(from, { replace: true })
       } else {
         const { error, data } = await signUp(email.trim(), password, name.trim())
         if (error) throw error
 
         if (data?.session) {
           toast.success('Conta criada com sucesso!')
+          navigate(from, { replace: true })
         } else {
           // Attempt to login immediately since the backend auto-confirms users
           const { error: signInError } = await signIn(email.trim(), password)
 
           if (!signInError) {
             toast.success('Conta criada com sucesso!')
+            navigate(from, { replace: true })
           } else {
             toast.success('Conta criada com sucesso! Você já pode fazer login.', {
               duration: 6000,
@@ -141,7 +149,16 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? 'Carregando...' : isLogin ? 'Entrar' : 'Criar conta'}
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Aguarde...
+                </>
+              ) : isLogin ? (
+                'Entrar'
+              ) : (
+                'Criar conta'
+              )}
             </Button>
             <Button
               type="button"
