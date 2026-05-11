@@ -18,7 +18,7 @@ export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTempla
             <img
               src={profile.logo_url}
               alt="Logo do Emissor"
-              className="h-20 w-auto max-w-[250px] object-contain object-left mb-2 filter brightness-0 invert"
+              className="h-28 w-auto max-w-[320px] object-contain object-left mb-2 filter brightness-0 invert"
             />
           )}
           <h2 className="text-2xl font-bold uppercase tracking-widest">{documentTitle}</h2>

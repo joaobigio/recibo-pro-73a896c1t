@@ -17,7 +17,7 @@ export function MinimalistReceipt({ data, documentTitle, pixPayload }: ReceiptTe
           <img
             src={profile.logo_url}
             alt="Logo do Emissor"
-            className="h-20 w-auto max-w-[200px] object-contain mb-6 grayscale opacity-80"
+            className="h-28 w-auto max-w-[280px] object-contain mb-6 grayscale opacity-80"
           />
         )}
         <h2 className="text-sm font-medium tracking-[0.3em] uppercase text-gray-400 mb-4">
