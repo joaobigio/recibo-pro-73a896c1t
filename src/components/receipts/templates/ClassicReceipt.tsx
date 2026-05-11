@@ -19,7 +19,7 @@ export function ClassicReceipt({ data, documentTitle, pixPayload }: ReceiptTempl
               <img
                 src={profile.logo_url}
                 alt="Logo do Emissor"
-                className="h-16 w-auto object-contain object-left"
+                className="h-24 w-auto max-w-[250px] object-contain object-left"
               />
             )}
             <h2 className="text-3xl font-bold uppercase tracking-wider text-gray-800">

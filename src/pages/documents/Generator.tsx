@@ -19,6 +19,7 @@ import { getProfile, Profile } from '@/services/profiles'
 import { getClients, Client } from '@/services/clients'
 import { createDocument } from '@/services/documents'
 import { useAuth } from '@/hooks/use-auth'
+import { maskCpfCnpj } from '@/lib/format'
 import { toast } from 'sonner'
 import { Printer, Share2, Save } from 'lucide-react'
 
@@ -266,8 +267,10 @@ export default function Generator() {
               <Label>CPF/CNPJ do Cliente</Label>
               <Input
                 value={formData.clientDocument}
-                onChange={(e) => setFormData((p) => ({ ...p, clientDocument: e.target.value }))}
-                placeholder="000.000.000-00"
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, clientDocument: maskCpfCnpj(e.target.value) }))
+                }
+                placeholder="000.000.000-00 ou 00.000.000/0000-00"
               />
             </div>
           </CardContent>

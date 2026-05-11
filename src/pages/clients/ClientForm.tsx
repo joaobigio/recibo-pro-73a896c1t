@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useAuth } from '@/hooks/use-auth'
 import { createClient, updateClient, getClients } from '@/services/clients'
+import { maskCpfCnpj } from '@/lib/format'
 import { toast } from 'sonner'
 import { Search, Loader2 } from 'lucide-react'
 
@@ -169,7 +170,9 @@ export default function ClientForm() {
                 disabled={noDocument}
                 required={!noDocument}
                 value={formData.document}
-                onChange={(e) => setFormData((p) => ({ ...p, document: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((p) => ({ ...p, document: maskCpfCnpj(e.target.value) }))
+                }
                 placeholder="CPF ou CNPJ"
               />
             </div>

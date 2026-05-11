@@ -33,7 +33,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
               <img
                 src={profile.logo_url}
                 alt="Logo do Emissor"
-                className="h-16 w-auto object-contain object-left"
+                className="h-24 w-auto max-w-[250px] object-contain object-left"
               />
             ) : (
               <div className="font-bold text-sm break-words pr-4">
