@@ -133,6 +133,7 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string | null
           created_at: string
           description: string | null
           id: string
@@ -143,6 +144,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -153,6 +155,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -210,6 +213,63 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      recurring_documents: {
+        Row: {
+          active: boolean
+          amount: number
+          client_id: string
+          created_at: string
+          document_data: Json
+          frequency: string
+          id: string
+          next_date: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          amount?: number
+          client_id: string
+          created_at?: string
+          document_data?: Json
+          frequency?: string
+          id?: string
+          next_date: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          client_id?: string
+          created_at?: string
+          document_data?: Json
+          frequency?: string
+          id?: string
+          next_date?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'recurring_documents_client_id_fkey'
+            columns: ['client_id']
+            isOneToOne: false
+            referencedRelation: 'clients'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'recurring_documents_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
     }
     Views: {
@@ -396,6 +456,7 @@ export const Constants = {
 //   type: text (not null, default: 'product'::text)
 //   created_at: timestamp with time zone (not null, default: now())
 //   updated_at: timestamp with time zone (not null, default: now())
+//   category: text (nullable)
 // Table: profiles
 //   id: uuid (not null)
 //   email: text (not null)
@@ -407,6 +468,18 @@ export const Constants = {
 //   created_at: timestamp with time zone (not null, default: now())
 //   updated_at: timestamp with time zone (not null, default: now())
 //   is_admin: boolean (not null, default: false)
+// Table: recurring_documents
+//   id: uuid (not null, default: gen_random_uuid())
+//   user_id: uuid (not null)
+//   client_id: uuid (not null)
+//   title: text (not null)
+//   amount: numeric (not null, default: 0)
+//   frequency: text (not null, default: 'monthly'::text)
+//   next_date: date (not null)
+//   active: boolean (not null, default: true)
+//   document_data: jsonb (not null, default: '{}'::jsonb)
+//   created_at: timestamp with time zone (not null, default: now())
+//   updated_at: timestamp with time zone (not null, default: now())
 
 // --- CONSTRAINTS ---
 // Table: clients
@@ -422,9 +495,17 @@ export const Constants = {
 // Table: profiles
 //   FOREIGN KEY profiles_id_fkey: FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 //   PRIMARY KEY profiles_pkey: PRIMARY KEY (id)
+// Table: recurring_documents
+//   FOREIGN KEY recurring_documents_client_id_fkey: FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+//   PRIMARY KEY recurring_documents_pkey: PRIMARY KEY (id)
+//   FOREIGN KEY recurring_documents_user_id_fkey: FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE CASCADE
 
 // --- ROW LEVEL SECURITY POLICIES ---
 // Table: clients
+//   Policy "Acesso Total Autenticado" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: true
+//   Policy "Enable read access for all users" (SELECT, PERMISSIVE) roles={public}
+//     USING: true
 //   Policy "Users can manage their clients" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = user_id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
@@ -452,6 +533,10 @@ export const Constants = {
 //     WITH CHECK: ((auth.uid() = id) OR is_admin())
 //   Policy "Users can view profiles" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = id) OR is_admin())
+// Table: recurring_documents
+//   Policy "Users can manage their own recurring_documents" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: ((auth.uid() = user_id) OR is_admin())
+//     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 
 // --- DATABASE FUNCTIONS ---
 // FUNCTION handle_new_user()
@@ -536,6 +621,8 @@ export const Constants = {
 //   tr_products_updated_at: CREATE TRIGGER tr_products_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
 // Table: profiles
 //   tr_profiles_updated_at: CREATE TRIGGER tr_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
+// Table: recurring_documents
+//   tr_recurring_documents_updated_at: CREATE TRIGGER tr_recurring_documents_updated_at BEFORE UPDATE ON public.recurring_documents FOR EACH ROW EXECUTE FUNCTION handle_updated_at()
 
 // --- INDEXES ---
 // Table: clients
@@ -544,3 +631,5 @@ export const Constants = {
 //   CREATE INDEX idx_documents_user_id ON public.documents USING btree (user_id)
 // Table: products
 //   CREATE INDEX idx_products_user_id ON public.products USING btree (user_id)
+// Table: recurring_documents
+//   CREATE INDEX idx_recurring_documents_user_id ON public.recurring_documents USING btree (user_id)

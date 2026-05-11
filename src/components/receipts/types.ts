@@ -1,4 +1,5 @@
 export interface ReceiptData {
+  id?: string
   type?: string
   template?: string
   amount: number

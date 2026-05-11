@@ -171,37 +171,7 @@ export default function ThirdPartyReceiptForm() {
         </div>
 
         <div className="space-y-2">
-          <Label>Layout do Recibo</Label>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant={formData.template === 'classic' ? 'default' : 'outline'}
-              onClick={() => setFormData((p) => ({ ...p, template: 'classic' }))}
-              className={formData.template === 'classic' ? 'bg-slate-800 text-white' : ''}
-            >
-              Clássico
-            </Button>
-            <Button
-              type="button"
-              variant={formData.template === 'modern' ? 'default' : 'outline'}
-              onClick={() => setFormData((p) => ({ ...p, template: 'modern' }))}
-              className={formData.template === 'modern' ? 'bg-slate-800 text-white' : ''}
-            >
-              Moderno
-            </Button>
-            <Button
-              type="button"
-              variant={formData.template === 'minimalist' ? 'default' : 'outline'}
-              onClick={() => setFormData((p) => ({ ...p, template: 'minimalist' }))}
-              className={formData.template === 'minimalist' ? 'bg-slate-800 text-white' : ''}
-            >
-              Minimalista
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Cliente *</Label>
+          <Label>Cliente (Recebedor) *</Label>
           <div className="flex gap-2">
             <div className="flex-1">
               <Select
