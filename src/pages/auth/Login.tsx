@@ -45,13 +45,17 @@ export default function Login() {
         if (data?.session) {
           toast.success('Conta criada com sucesso!')
         } else {
-          toast.success(
-            'Conta criada! Por favor, verifique seu e-mail para confirmar o cadastro.',
-            {
+          // Attempt to login immediately since the backend auto-confirms users
+          const { error: signInError } = await signIn(email.trim(), password)
+
+          if (!signInError) {
+            toast.success('Conta criada com sucesso!')
+          } else {
+            toast.success('Conta criada com sucesso! Você já pode fazer login.', {
               duration: 6000,
-            },
-          )
-          setIsLogin(true)
+            })
+            setIsLogin(true)
+          }
         }
       }
     } catch (error: any) {
