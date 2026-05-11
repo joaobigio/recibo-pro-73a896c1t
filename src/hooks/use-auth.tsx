@@ -53,21 +53,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
+    let mounted = true
+
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) console.error('Error fetching session:', error)
+      if (mounted) {
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+      }
+    })
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
+    } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (mounted) {
+        setSession(currentSession)
+        setUser(currentSession?.user ?? null)
+        setLoading(false)
+      }
     })
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
@@ -85,7 +95,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/`,
       },
     })
     return { data, error }
@@ -97,6 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const signOut = async () => {
+    setIsAdmin(false)
+    setProfile(null)
     const { error } = await supabase.auth.signOut()
     return { error }
   }

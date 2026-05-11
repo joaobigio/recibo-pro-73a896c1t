@@ -16,14 +16,26 @@ import { toast } from 'sonner'
 import { Receipt } from 'lucide-react'
 
 export default function Login() {
-  const { signIn, signUp, session } = useAuth()
+  const { signIn, signUp, session, loading: authLoading } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  // Pre-fill with seeded test user credentials for immediate access
-  const [email, setEmail] = useState('joaozinhosantoss@icloud.com')
-  const [password, setPassword] = useState('Skip@Pass')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="bg-primary/10 p-4 rounded-full animate-pulse">
+            <Receipt className="h-8 w-8 text-primary" />
+          </div>
+          <p className="text-muted-foreground animate-pulse">Verificando sessão...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (session) {
     return <Navigate to="/" replace />
@@ -46,8 +58,6 @@ export default function Login() {
           toast.success('Conta criada com sucesso!')
         } else {
           // Attempt to login immediately since the backend auto-confirms users
-          // Add a small delay to allow the database trigger to commit the confirmation
-          await new Promise((resolve) => setTimeout(resolve, 500))
           const { error: signInError } = await signIn(email.trim(), password)
 
           if (!signInError) {
@@ -61,6 +71,7 @@ export default function Login() {
         }
       }
     } catch (error: any) {
+      console.error('Auth error:', error)
       let message = error.message || 'Ocorreu um erro'
 
       // Translate generic Supabase auth errors to Portuguese
