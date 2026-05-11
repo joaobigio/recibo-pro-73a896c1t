@@ -53,6 +53,17 @@ export const maskTextCpfCnpj = (text: string) => {
   })
 }
 
+export const maskPhone = (value: string | undefined | null) => {
+  if (!value) return ''
+  const v = value.replace(/\D/g, '')
+
+  if (v.length === 0) return ''
+  if (v.length <= 2) return `(${v}`
+  if (v.length <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`
+  if (v.length <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`
+  return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7, 11)}`
+}
+
 export const formatDate = (dateStr: string | undefined | null) => {
   if (!dateStr) return ''
   const [year, month, day] = dateStr.split('T')[0].split('-')

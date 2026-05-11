@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { Upload, Loader2, Image as ImageIcon } from 'lucide-react'
+import { maskCpfCnpj, maskPhone } from '@/lib/format'
 
 export default function Settings() {
   const { user, refreshProfile } = useAuth()
@@ -17,9 +18,18 @@ export default function Settings() {
   const [profile, setProfile] = useState<any>(null)
   const [uploading, setUploading] = useState(false)
 
+  const [doc, setDoc] = useState('')
+  const [phone, setPhone] = useState('')
+
   useEffect(() => {
     if (user) {
-      getProfile(user.id).then(({ data }) => setProfile(data))
+      getProfile(user.id).then(({ data }) => {
+        setProfile(data)
+        if (data) {
+          setDoc(maskCpfCnpj(data.document || ''))
+          setPhone(maskPhone(data.phone || ''))
+        }
+      })
     }
   }, [user])
 
@@ -165,11 +175,21 @@ export default function Settings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="document">CPF ou CNPJ</Label>
-                <Input id="document" name="document" defaultValue={profile.document || ''} />
+                <Input
+                  id="document"
+                  name="document"
+                  value={doc}
+                  onChange={(e) => setDoc(maskCpfCnpj(e.target.value))}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefone / WhatsApp</Label>
-                <Input id="phone" name="phone" defaultValue={profile.phone || ''} />
+                <Input
+                  id="phone"
+                  name="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(maskPhone(e.target.value))}
+                />
               </div>
             </div>
             <div className="space-y-2">
