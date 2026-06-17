@@ -55,21 +55,21 @@ export default function Login() {
         const { error } = await signIn(email.trim(), password)
         if (error) throw error
         toast.success('Bem-vindo de volta!')
-        navigate(from, { replace: true })
+        // A navegação será feita automaticamente pela condicional "if (session)" no topo do componente, evitando race conditions.
       } else {
         const { error, data } = await signUp(email.trim(), password, name.trim())
         if (error) throw error
 
         if (data?.session) {
           toast.success('Conta criada com sucesso!')
-          navigate(from, { replace: true })
+          // A navegação será feita automaticamente pela condicional "if (session)"
         } else {
           // Attempt to login immediately since the backend auto-confirms users
           const { error: signInError } = await signIn(email.trim(), password)
 
           if (!signInError) {
             toast.success('Conta criada com sucesso!')
-            navigate(from, { replace: true })
+            // A navegação será feita automaticamente pela condicional "if (session)"
           } else {
             toast.success('Conta criada com sucesso! Você já pode fazer login.', {
               duration: 6000,
