@@ -48,6 +48,12 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!email.trim() || !password || (!isLogin && !name.trim())) {
+      toast.error('Por favor, preencha todos os campos obrigatórios.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -83,12 +89,14 @@ export default function Login() {
       let message = error.message || 'Ocorreu um erro'
 
       // Translate generic Supabase auth errors to Portuguese
-      if (message.includes('Password should be at least')) {
+      if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+        message = 'Erro de conexão. Por favor, verifique sua internet.'
+      } else if (message.includes('Password should be at least')) {
         message = 'A senha deve ter pelo menos 6 caracteres.'
       } else if (message.includes('User already registered')) {
         message = 'Este e-mail já está cadastrado. Faça login.'
       } else if (message.includes('Invalid login credentials')) {
-        message = 'E-mail ou senha incorretos.'
+        message = 'E-mail ou senha incorretos. Por favor, verifique seus dados e tente novamente.'
       } else if (message.includes('Email not confirmed')) {
         message = 'E-mail não confirmado. Verifique sua caixa de entrada.'
       }
@@ -152,7 +160,7 @@ export default function Login() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Aguarde...
+                  {isLogin ? 'Entrando...' : 'Criando conta...'}
                 </>
               ) : isLogin ? (
                 'Entrar'
