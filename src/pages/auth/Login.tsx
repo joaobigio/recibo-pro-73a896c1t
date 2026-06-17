@@ -114,11 +114,19 @@ export default function Login() {
       })
 
       let message = error?.message || 'Ocorreu um erro ao fazer login'
-      if (message.includes('Invalid login credentials')) {
-        message = 'E-mail ou senha incorretos. Tente novamente.'
+      if (
+        error?.status === 400 ||
+        error?.status === 401 ||
+        message.includes('Invalid login credentials')
+      ) {
+        message = 'E-mail ou senha incorretos'
       } else if (message.includes('Email not confirmed')) {
         message = 'E-mail não confirmado. Por favor, verifique sua caixa de entrada.'
-      } else if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+      } else if (
+        message.includes('Failed to fetch') ||
+        message.includes('NetworkError') ||
+        error?.message === 'Load failed'
+      ) {
         message = 'Erro de conexão com o servidor. Tente novamente mais tarde.'
       }
 

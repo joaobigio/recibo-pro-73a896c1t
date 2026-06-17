@@ -511,6 +511,7 @@ export const Constants = {
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 //   Policy "Users can manage their own clients" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: (auth.uid() = user_id)
+//     WITH CHECK: (auth.uid() = user_id)
 // Table: documents
 //   Policy "Admins can view all documents" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: is_admin()
@@ -519,7 +520,11 @@ export const Constants = {
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
 //   Policy "Users can manage their own documents" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: (auth.uid() = user_id)
+//     WITH CHECK: (auth.uid() = user_id)
 // Table: products
+//   Policy "Users can manage their own products" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = user_id)
+//     WITH CHECK: (auth.uid() = user_id)
 //   Policy "Users can manage their products" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = user_id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
@@ -536,6 +541,9 @@ export const Constants = {
 //   Policy "Users can view profiles" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = id) OR is_admin())
 // Table: recurring_documents
+//   Policy "Users can manage their own recurring documents" (ALL, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = user_id)
+//     WITH CHECK: (auth.uid() = user_id)
 //   Policy "Users can manage their own recurring_documents" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = user_id) OR is_admin())
 //     WITH CHECK: ((auth.uid() = user_id) OR is_admin())
