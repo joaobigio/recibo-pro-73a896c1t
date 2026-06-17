@@ -105,15 +105,26 @@ export default function Login() {
         }
       }
     } catch (error: any) {
-      console.error('Auth error:', error)
+      console.error('Auth error detailed:', {
+        error,
+        name: error?.name,
+        status: error?.status,
+        code: error?.code,
+        message: error?.message,
+      })
 
-      let message = error.message || 'Ocorreu um erro ao fazer login'
+      let message = error?.message || 'Ocorreu um erro ao fazer login'
       if (message.includes('Invalid login credentials')) {
         message = 'E-mail ou senha incorretos. Tente novamente.'
+      } else if (message.includes('Email not confirmed')) {
+        message = 'E-mail não confirmado. Por favor, verifique sua caixa de entrada.'
+      } else if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+        message = 'Erro de conexão com o servidor. Tente novamente mais tarde.'
       }
 
       toast({
         variant: 'destructive',
+        title: error?.code ? `Falha na Autenticação (${error.code})` : 'Erro',
         description: message,
       })
     } finally {

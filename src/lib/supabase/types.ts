@@ -529,8 +529,10 @@ export const Constants = {
 //   Policy "Users can manage their own profiles" (ALL, PERMISSIVE) roles={authenticated}
 //     USING: (auth.uid() = id)
 //   Policy "Users can update own profile" (UPDATE, PERMISSIVE) roles={authenticated}
-//     USING: ((auth.uid() = id) OR is_admin())
-//     WITH CHECK: ((auth.uid() = id) OR is_admin())
+//     USING: (auth.uid() = id)
+//     WITH CHECK: (auth.uid() = id)
+//   Policy "Users can view own profile" (SELECT, PERMISSIVE) roles={authenticated}
+//     USING: (auth.uid() = id)
 //   Policy "Users can view profiles" (SELECT, PERMISSIVE) roles={authenticated}
 //     USING: ((auth.uid() = id) OR is_admin())
 // Table: recurring_documents

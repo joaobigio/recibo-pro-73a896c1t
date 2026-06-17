@@ -55,14 +55,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let mounted = true
 
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) console.error('Error fetching session:', error)
-      if (mounted) {
-        setSession(session)
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data: { session }, error }) => {
+        if (error) console.error('Error fetching session:', error)
+        if (mounted) {
+          setSession(session)
+          setUser(session?.user ?? null)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Session error:', err)
+        if (mounted) setLoading(false)
+      })
 
     const {
       data: { subscription },
