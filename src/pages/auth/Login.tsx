@@ -63,14 +63,14 @@ export default function Login() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         })
+
         if (error) throw error
 
-        const { data: sessionData } = await supabase.auth.getSession()
-        if (sessionData.session) {
+        if (data?.session) {
           toast({ description: 'Bem-vindo de volta!' })
           navigate(from, { replace: true })
         } else {
@@ -106,7 +106,12 @@ export default function Login() {
       }
     } catch (error: any) {
       console.error('Auth error:', error)
-      const message = error.message || 'Ocorreu um erro'
+
+      let message = error.message || 'Ocorreu um erro ao fazer login'
+      if (message.includes('Invalid login credentials')) {
+        message = 'E-mail ou senha incorretos. Tente novamente.'
+      }
+
       toast({
         variant: 'destructive',
         description: message,
