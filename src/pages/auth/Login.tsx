@@ -12,13 +12,15 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 import { Receipt, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase/client'
 
 export default function Login() {
-  const { signIn, signUp, session, loading: authLoading } = useAuth()
+  const { signUp, session, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { toast } = useToast()
 
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -50,7 +52,10 @@ export default function Login() {
     e.preventDefault()
 
     if (!email.trim() || !password || (!isLogin && !name.trim())) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.')
+      toast({
+        variant: 'destructive',
+        description: 'Por favor, preencha todos os campos obrigatórios.',
+      })
       return
     }
 
@@ -58,50 +63,54 @@ export default function Login() {
 
     try {
       if (isLogin) {
-        const { error } = await signIn(email.trim(), password)
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        })
         if (error) throw error
-        toast.success('Bem-vindo de volta!')
-        // A navegação será feita automaticamente pela condicional "if (session)" no topo do componente, evitando race conditions.
+
+        const { data: sessionData } = await supabase.auth.getSession()
+        if (sessionData.session) {
+          toast({ description: 'Bem-vindo de volta!' })
+          navigate(from, { replace: true })
+        } else {
+          throw new Error('Não foi possível estabelecer a sessão.')
+        }
       } else {
         const { error, data } = await signUp(email.trim(), password, name.trim())
         if (error) throw error
 
         if (data?.session) {
-          toast.success('Conta criada com sucesso!')
-          // A navegação será feita automaticamente pela condicional "if (session)"
+          const { data: sessionData } = await supabase.auth.getSession()
+          if (sessionData.session) {
+            toast({ description: 'Conta criada com sucesso!' })
+            navigate(from, { replace: true })
+          }
         } else {
-          // Attempt to login immediately since the backend auto-confirms users
-          const { error: signInError } = await signIn(email.trim(), password)
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          })
 
           if (!signInError) {
-            toast.success('Conta criada com sucesso!')
-            // A navegação será feita automaticamente pela condicional "if (session)"
+            const { data: sessionData } = await supabase.auth.getSession()
+            if (sessionData.session) {
+              toast({ description: 'Conta criada com sucesso!' })
+              navigate(from, { replace: true })
+            }
           } else {
-            toast.success('Conta criada com sucesso! Você já pode fazer login.', {
-              duration: 6000,
-            })
+            toast({ description: 'Conta criada com sucesso! Você já pode fazer login.' })
             setIsLogin(true)
           }
         }
       }
     } catch (error: any) {
       console.error('Auth error:', error)
-      let message = error.message || 'Ocorreu um erro'
-
-      // Translate generic Supabase auth errors to Portuguese
-      if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
-        message = 'Erro de conexão. Por favor, verifique sua internet.'
-      } else if (message.includes('Password should be at least')) {
-        message = 'A senha deve ter pelo menos 6 caracteres.'
-      } else if (message.includes('User already registered')) {
-        message = 'Este e-mail já está cadastrado. Faça login.'
-      } else if (message.includes('Invalid login credentials')) {
-        message = 'E-mail ou senha incorretos. Por favor, verifique seus dados e tente novamente.'
-      } else if (message.includes('Email not confirmed')) {
-        message = 'E-mail não confirmado. Verifique sua caixa de entrada.'
-      }
-
-      toast.error(message)
+      const message = error.message || 'Ocorreu um erro'
+      toast({
+        variant: 'destructive',
+        description: message,
+      })
     } finally {
       setLoading(false)
     }
