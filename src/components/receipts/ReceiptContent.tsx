@@ -17,7 +17,7 @@ export function ReceiptContent({
   data,
   documentType,
   documentTitle,
-  className = 'space-y-6 text-lg leading-loose text-justify',
+  className = 'space-y-6 text-lg leading-loose text-justify break-words',
 }: ReceiptContentProps) {
   const addressParts = [
     data.clientStreet,
@@ -40,7 +40,7 @@ export function ReceiptContent({
     <div className={className}>
       {data.documentNumber && (
         <div className="mb-4 text-right print:mb-2">
-          <span className="font-bold text-sm bg-muted print:bg-transparent print:border print:border-gray-300 px-3 py-1 rounded-md">
+          <span className="font-bold uppercase text-sm bg-muted print:bg-transparent print:border print:border-gray-300 px-3 py-1 rounded-md">
             Nº {data.documentNumber}
           </span>
         </div>
@@ -49,27 +49,27 @@ export function ReceiptContent({
       {documentType === 'promissory' && (
         <p>
           No dia{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase">
             {data.date ? formatDate(data.date) : '____/____/______'}
           </strong>
           , pagarei(emos) por esta única via de NOTA PROMISSÓRIA a{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {data.issuerName || '________________________________________'}
           </strong>
           , o valor de{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
           </strong>
           , referente a{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase break-words">
             {data.description || '________________________________________________________________'}
           </strong>
           .
           {hasAddress && (
             <span>
               {' '}
-              Pagador residente/sediado em <strong className="font-semibold">{addressParts}</strong>
-              .
+              Pagador residente/sediado em{' '}
+              <strong className="font-bold uppercase">{addressParts}</strong>.
             </span>
           )}
           {data.clientPixKey && (
@@ -90,7 +90,7 @@ export function ReceiptContent({
               ) : (
                 'Chave PIX do pagador:'
               )}{' '}
-              <strong className="font-semibold">{data.clientPixKey}</strong>.
+              <strong className="font-bold uppercase">{data.clientPixKey}</strong>.
             </span>
           )}
         </p>
@@ -102,16 +102,16 @@ export function ReceiptContent({
         documentType === 'rent') && (
         <p>
           Recebi(emos) de{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {data.clientName || '________________________________________'}
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           {hasAddress && (
             <span>
-              , residente/sediado em <strong className="font-semibold">{addressParts}</strong>
+              , residente/sediado em <strong className="font-bold uppercase">{addressParts}</strong>
             </span>
           )}
           {data.clientPixKey && (
@@ -132,15 +132,15 @@ export function ReceiptContent({
               ) : (
                 'Chave PIX'
               )}{' '}
-              <strong className="font-semibold">{data.clientPixKey}</strong>
+              <strong className="font-bold uppercase">{data.clientPixKey}</strong>
             </span>
           )}
           , a importância de{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
           </strong>
           , referente {data.referencePrefix || 'a'}{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase break-words">
             {documentType === 'rent' ? 'aluguel do imóvel localizado em: ' : ''}
             {data.description || '________________________________________________________________'}
           </strong>
@@ -150,18 +150,18 @@ export function ReceiptContent({
 
       {documentType === 'budget' && (
         <p>
-          Apresentamos o presente <strong className="font-semibold uppercase">ORÇAMENTO</strong>{' '}
-          para o cliente{' '}
-          <strong className="font-semibold uppercase">
+          Apresentamos o presente <strong className="font-bold uppercase">ORÇAMENTO</strong> para o
+          cliente{' '}
+          <strong className="font-bold uppercase">
             {data.clientName || '________________________________________'}
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           {hasAddress && (
             <span>
-              , endereço: <strong className="font-semibold">{addressParts}</strong>
+              , endereço: <strong className="font-bold uppercase">{addressParts}</strong>
             </span>
           )}
           {data.clientPixKey && (
@@ -182,15 +182,15 @@ export function ReceiptContent({
               ) : (
                 'Chave PIX:'
               )}{' '}
-              <strong className="font-semibold">{data.clientPixKey}</strong>
+              <strong className="font-bold uppercase">{data.clientPixKey}</strong>
             </span>
           )}
           , no valor total de{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
           </strong>
           , referente à prestação dos seguintes serviços/produtos:{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase break-words">
             {data.description || '________________________________________________________________'}
           </strong>
           . Este orçamento tem validade de 15 dias a partir da data de emissão.
@@ -200,20 +200,20 @@ export function ReceiptContent({
       {documentType === 'service_order' && (
         <p>
           Fica autorizada a execução dos serviços especificados como:{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase break-words">
             {data.description || '________________________________________________________________'}
           </strong>
           , solicitados pelo cliente{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {data.clientName || '________________________________________'}
           </strong>
           , inscrito no CPF/CNPJ sob o nº{' '}
-          <strong className="font-semibold">
+          <strong className="font-bold uppercase">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
           {hasAddress && (
             <span>
-              , endereço: <strong className="font-semibold">{addressParts}</strong>
+              , endereço: <strong className="font-bold uppercase">{addressParts}</strong>
             </span>
           )}
           {data.clientPixKey && (
@@ -234,11 +234,11 @@ export function ReceiptContent({
               ) : (
                 'Chave PIX:'
               )}{' '}
-              <strong className="font-semibold">{data.clientPixKey}</strong>
+              <strong className="font-bold uppercase">{data.clientPixKey}</strong>
             </span>
           )}
           , pelo valor acordado de{' '}
-          <strong className="font-semibold uppercase">
+          <strong className="font-bold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
           </strong>
           .
@@ -250,10 +250,14 @@ export function ReceiptContent({
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b-2 border-primary/20 print:border-gray-800">
-                <th className="text-left py-2 font-semibold print:text-gray-800">Descrição</th>
-                <th className="text-right py-2 font-semibold print:text-gray-800">Qtd</th>
-                <th className="text-right py-2 font-semibold print:text-gray-800">V. Unitário</th>
-                <th className="text-right py-2 font-semibold print:text-gray-800">Total</th>
+                <th className="text-left py-2 font-bold uppercase print:text-gray-800">
+                  Descrição
+                </th>
+                <th className="text-right py-2 font-bold uppercase print:text-gray-800">Qtd</th>
+                <th className="text-right py-2 font-bold uppercase print:text-gray-800">
+                  V. Unitário
+                </th>
+                <th className="text-right py-2 font-bold uppercase print:text-gray-800">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -293,7 +297,7 @@ export function ReceiptContent({
                 </div>
               ) : null}
               {data.discount || data.surcharge || hasItems ? (
-                <div className="flex justify-between font-bold text-base pt-2 border-t print:border-gray-800 mt-2">
+                <div className="flex justify-between font-bold uppercase text-base pt-2 border-t print:border-gray-800 mt-2">
                   <span>Total:</span>
                   <span>{formatMoney(data.amount)}</span>
                 </div>
@@ -314,7 +318,7 @@ export function ReceiptContent({
 
       {data.observations && (
         <div className="mt-6 pt-4 border-t border-dashed print:border-gray-400">
-          <p className="text-sm font-semibold mb-1 print:text-gray-800">Observações:</p>
+          <p className="text-sm font-bold uppercase mb-1 print:text-gray-800">Observações:</p>
           <p className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere] print:text-gray-700">
             {data.observations}
           </p>
@@ -323,14 +327,14 @@ export function ReceiptContent({
 
       {data.paymentMethods && data.paymentMethods.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm font-medium print:text-gray-800">
+          <p className="text-sm font-bold uppercase print:text-gray-800">
             Forma de Pagamento: {data.paymentMethods.map((m: any) => m.type).join(', ')}
           </p>
         </div>
       )}
       {data.paymentMethod && (
         <div className="mt-4">
-          <p className="text-sm font-medium print:text-gray-800">
+          <p className="text-sm font-bold uppercase print:text-gray-800">
             Forma de Pagamento:{' '}
             <span className="capitalize">{data.paymentMethod.replace('_', ' ')}</span>
             {data.paymentMethodDetails && ` - ${data.paymentMethodDetails}`}

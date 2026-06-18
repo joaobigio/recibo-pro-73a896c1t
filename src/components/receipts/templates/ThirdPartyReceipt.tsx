@@ -36,20 +36,22 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
                 className="h-32 w-auto max-w-[320px] object-contain object-left"
               />
             ) : (
-              <div className="font-bold text-sm break-words pr-4">
+              <div className="font-bold uppercase text-sm break-words pr-4">
                 {data.issuerName || profile?.name || 'EMISSOR'}
               </div>
             )}
           </div>
           <div className="w-1/3 flex justify-center pt-2">
-            <h2 className="text-xl font-bold text-gray-900 whitespace-nowrap">{documentTitle}</h2>
+            <h2 className="text-xl font-bold uppercase text-gray-900 whitespace-nowrap">
+              {documentTitle}
+            </h2>
           </div>
           <div className="w-1/3"></div>
         </div>
 
         <div className="flex justify-between items-end mb-8">
-          <div className="text-sm text-gray-700 font-medium">Nº {receiptNumber}</div>
-          <div className="border border-gray-400 px-4 py-1.5 font-bold text-xl rounded bg-white min-w-[140px] text-center shadow-sm">
+          <div className="text-sm text-gray-700 font-bold uppercase">Nº {receiptNumber}</div>
+          <div className="border border-gray-400 px-4 py-1.5 font-bold uppercase text-xl rounded bg-white min-w-[140px] text-center shadow-sm">
             {formatCurrency(data.amount)}
           </div>
         </div>
@@ -60,16 +62,17 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
             <strong className="font-bold uppercase text-black">
               {data.issuerName || profile?.name || '________________________________________'}
             </strong>
-            , inscrit{isCNPJ ? 'a' : 'o'} no {docTypeLabel} nº{' '}
-            <strong className="font-bold text-black">
+            , inscrit{isCNPJ ? 'a' : 'o'} no{' '}
+            <strong className="font-bold uppercase">{docTypeLabel}</strong> nº{' '}
+            <strong className="font-bold uppercase text-black">
               {issuerDoc ? maskCpfCnpj(issuerDoc) : '________________________'}
             </strong>
             , a importância de{' '}
-            <strong className="font-bold lowercase text-black">
+            <strong className="font-bold uppercase text-black">
               {numeroPorExtenso(data.amount) || '________________________________'}
             </strong>
             , referente {data.referencePrefix || 'à'}{' '}
-            <strong className="font-bold text-black">
+            <strong className="font-bold uppercase text-black break-words">
               {data.description ||
                 '________________________________________________________________'}
             </strong>
@@ -81,7 +84,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
               {data.paymentMethod && (
                 <>
                   Pagamento via{' '}
-                  <strong className="font-bold text-black">
+                  <strong className="font-bold uppercase text-black">
                     {data.paymentMethod === 'outros' && data.paymentMethodDetails
                       ? data.paymentMethodDetails
                       : (
@@ -110,7 +113,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
                   }[data.clientPixKeyType || ''] ||
                     data.clientPixKeyType ||
                     'Aleatória'}
-                  ): <strong className="font-bold text-black">{data.clientPixKey}</strong>
+                  ): <strong className="font-bold uppercase text-black">{data.clientPixKey}</strong>
                 </>
               )}
             </p>
@@ -123,14 +126,17 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
 
           {data.observations && (
             <p className="pt-2 break-words [overflow-wrap:anywhere]">
-              <strong className="font-bold text-black">Observação:</strong> {data.observations}
+              <strong className="font-bold uppercase text-black">Observação:</strong>{' '}
+              {data.observations}
             </p>
           )}
         </div>
       </div>
 
       <div className="mt-16 flex flex-col">
-        <div className="text-right mb-12 text-lg text-gray-800">{formattedDate}</div>
+        <div className="text-right mb-12 text-lg text-gray-800 font-bold uppercase">
+          {formattedDate}
+        </div>
 
         <div className="text-center w-full max-w-md mx-auto relative mt-12">
           <div className="border-t border-gray-800 w-full mb-2"></div>

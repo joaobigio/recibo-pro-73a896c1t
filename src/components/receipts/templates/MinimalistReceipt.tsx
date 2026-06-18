@@ -27,19 +27,21 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
                 className="h-32 w-auto max-w-[320px] object-contain object-left"
               />
             ) : (
-              <div className="font-bold text-sm break-words pr-4">
+              <div className="font-bold uppercase text-sm break-words pr-4">
                 {data.issuerName || profile?.name || 'EMISSOR'}
               </div>
             )}
           </div>
           <div className="w-1/3 flex justify-center pt-2">
-            <h2 className="text-xl font-bold text-gray-900 whitespace-nowrap">{documentTitle}</h2>
+            <h2 className="text-xl font-bold uppercase text-gray-900 whitespace-nowrap">
+              {documentTitle}
+            </h2>
           </div>
           <div className="w-1/3"></div>
         </div>
 
         <div className="flex justify-between items-end mb-8">
-          <div className="text-sm text-gray-700 font-medium">Nº {receiptNumber}</div>
+          <div className="text-sm text-gray-700 font-bold uppercase">Nº {receiptNumber}</div>
           <div className="text-right">
             <div className="font-light text-3xl tracking-tight text-gray-900 mb-1">
               {formatCurrency(data.amount)}
@@ -91,18 +93,15 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
       <div className="mt-20 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
-          <p className="font-bold">{data.issuerName || 'Nome do Emissor'}</p>
+          <p className="font-bold uppercase">{data.issuerName || 'Nome do Emissor'}</p>
           <p className="text-sm text-gray-600">
             CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
           </p>
         </div>
 
         <div className="text-right flex flex-col items-end w-2/5">
-          <p className="mb-4 text-gray-700">
-            Data:{' '}
-            <span className="font-medium">
-              {data.date ? formatDate(data.date) : '____/____/______'}
-            </span>
+          <p className="mb-4 text-gray-700 font-bold uppercase">
+            Data: <span className="">{data.date ? formatDate(data.date) : '____/____/______'}</span>
           </p>
         </div>
       </div>
