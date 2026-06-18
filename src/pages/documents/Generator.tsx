@@ -40,6 +40,12 @@ export default function Generator() {
     clientDocument: '',
     clientPixKey: '',
     clientPixKeyType: '',
+    clientStreet: '',
+    clientNumber: '',
+    clientNeighborhood: '',
+    clientCity: '',
+    clientState: '',
+    clientCep: '',
     description: 'Serviços prestados',
     issuerName: '',
     issuerDocument: '',
@@ -59,6 +65,12 @@ export default function Generator() {
         clientDocument: found.document || '',
         clientPixKey: found.pix_key || '',
         clientPixKeyType: found.pix_key_type || '',
+        clientStreet: found.street || '',
+        clientNumber: found.number || '',
+        clientNeighborhood: found.neighborhood || '',
+        clientCity: found.city || '',
+        clientState: found.state || '',
+        clientCep: found.cep || '',
       }))
     } else if (name.trim() === '') {
       setFormData((p: any) => ({
@@ -66,6 +78,12 @@ export default function Generator() {
         clientDocument: '',
         clientPixKey: '',
         clientPixKeyType: '',
+        clientStreet: '',
+        clientNumber: '',
+        clientNeighborhood: '',
+        clientCity: '',
+        clientState: '',
+        clientCep: '',
       }))
     }
   }
@@ -100,9 +118,14 @@ export default function Generator() {
     if (!user) return
     setSaving(true)
     try {
+      const foundClient = clients.find(
+        (c) => c.name.toLowerCase() === formData.clientName.toLowerCase(),
+      )
+
       const { error } = await createDocument(user.id, {
         type: formData.type,
         amount: formData.amount,
+        client_id: foundClient ? foundClient.id : undefined,
         data: formData,
       })
       if (error) throw error
@@ -320,6 +343,70 @@ export default function Generator() {
                 }
                 placeholder="000.000.000-00 ou 00.000.000/0000-00"
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>CEP</Label>
+                <Input
+                  value={formData.clientCep}
+                  onChange={(e) => setFormData((p: any) => ({ ...p, clientCep: e.target.value }))}
+                  placeholder="00000-000"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Rua / Logradouro</Label>
+                <Input
+                  value={formData.clientStreet}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, clientStreet: e.target.value }))
+                  }
+                  placeholder="Nome da rua"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Número</Label>
+                <Input
+                  value={formData.clientNumber}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, clientNumber: e.target.value }))
+                  }
+                  placeholder="123"
+                />
+              </div>
+              <div className="space-y-2 col-span-2">
+                <Label>Bairro</Label>
+                <Input
+                  value={formData.clientNeighborhood}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, clientNeighborhood: e.target.value }))
+                  }
+                  placeholder="Bairro"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Cidade</Label>
+                <Input
+                  value={formData.clientCity}
+                  onChange={(e) => setFormData((p: any) => ({ ...p, clientCity: e.target.value }))}
+                  placeholder="Cidade"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Estado (UF)</Label>
+                <Input
+                  value={formData.clientState}
+                  onChange={(e) => setFormData((p: any) => ({ ...p, clientState: e.target.value }))}
+                  placeholder="SP"
+                  maxLength={2}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

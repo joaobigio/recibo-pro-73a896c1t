@@ -15,6 +15,21 @@ export function ReceiptContent({
   documentTitle,
   className = 'space-y-6 text-lg leading-loose text-justify',
 }: ReceiptContentProps) {
+  const addressParts = [
+    data.clientStreet,
+    data.clientNumber,
+    data.clientNeighborhood,
+    data.clientCity,
+    data.clientState ? `- ${data.clientState}` : '',
+    data.clientCep ? `CEP: ${data.clientCep}` : '',
+  ]
+    .filter(Boolean)
+    .join(', ')
+    .replace(/, -/g, ' -')
+    .replace(/, CEP/g, ' - CEP')
+
+  const hasAddress = addressParts.trim().length > 0
+
   return (
     <div className={className}>
       {documentType === 'promissory' && (
@@ -36,6 +51,19 @@ export function ReceiptContent({
             {data.description || '________________________________________________________________'}
           </strong>
           .
+          {hasAddress && (
+            <span>
+              {' '}
+              Pagador residente/sediado em <strong className="font-semibold">{addressParts}</strong>
+              .
+            </span>
+          )}
+          {data.clientPixKey && (
+            <span>
+              {' '}
+              Chave PIX do pagador: <strong className="font-semibold">{data.clientPixKey}</strong>.
+            </span>
+          )}
         </p>
       )}
 
@@ -52,6 +80,16 @@ export function ReceiptContent({
           <strong className="font-semibold">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
+          {hasAddress && (
+            <span>
+              , residente/sediado em <strong className="font-semibold">{addressParts}</strong>
+            </span>
+          )}
+          {data.clientPixKey && (
+            <span>
+              , com Chave PIX <strong className="font-semibold">{data.clientPixKey}</strong>
+            </span>
+          )}
           , a importância de{' '}
           <strong className="font-semibold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
@@ -76,6 +114,16 @@ export function ReceiptContent({
           <strong className="font-semibold">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
+          {hasAddress && (
+            <span>
+              , endereço: <strong className="font-semibold">{addressParts}</strong>
+            </span>
+          )}
+          {data.clientPixKey && (
+            <span>
+              , Chave PIX: <strong className="font-semibold">{data.clientPixKey}</strong>
+            </span>
+          )}
           , no valor total de{' '}
           <strong className="font-semibold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}
@@ -102,6 +150,16 @@ export function ReceiptContent({
           <strong className="font-semibold">
             {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '________________________'}
           </strong>
+          {hasAddress && (
+            <span>
+              , endereço: <strong className="font-semibold">{addressParts}</strong>
+            </span>
+          )}
+          {data.clientPixKey && (
+            <span>
+              , Chave PIX: <strong className="font-semibold">{data.clientPixKey}</strong>
+            </span>
+          )}
           , pelo valor acordado de{' '}
           <strong className="font-semibold uppercase">
             {numeroPorExtenso(data.amount) || '________________________________'}

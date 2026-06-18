@@ -8,6 +8,12 @@ export interface ReceiptData {
   clientDocument: string
   clientPixKey?: string
   clientPixKeyType?: string
+  clientStreet?: string
+  clientNumber?: string
+  clientNeighborhood?: string
+  clientCity?: string
+  clientState?: string
+  clientCep?: string
   description: string
   issuerName?: string
   issuerDocument?: string
