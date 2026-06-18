@@ -74,7 +74,19 @@ export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTempla
               )}
               {data.clientPixKey && (
                 <div className="text-sm text-gray-700 font-medium flex items-center gap-2">
-                  <span className="text-gray-500">Chave PIX (Cliente):</span>
+                  <span className="text-gray-500">
+                    {data.clientPixKeyType
+                      ? `Chave PIX Cliente (${
+                          {
+                            cpf: 'CPF',
+                            cnpj: 'CNPJ',
+                            email: 'E-mail',
+                            phone: 'Telefone',
+                            random: 'Aleatória',
+                          }[data.clientPixKeyType] || data.clientPixKeyType
+                        }):`
+                      : 'Chave PIX (Cliente):'}
+                  </span>
                   <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-900">
                     {data.clientPixKey}
                   </span>

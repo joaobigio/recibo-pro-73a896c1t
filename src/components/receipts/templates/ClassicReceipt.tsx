@@ -82,7 +82,19 @@ export function ClassicReceipt({ data, documentTitle, pixPayload }: ReceiptTempl
             )}
             {data.clientPixKey && (
               <div>
-                <span className="font-bold">Chave PIX (Cliente): </span>
+                <span className="font-bold">
+                  {data.clientPixKeyType
+                    ? `Chave PIX Cliente (${
+                        {
+                          cpf: 'CPF',
+                          cnpj: 'CNPJ',
+                          email: 'E-mail',
+                          phone: 'Telefone',
+                          random: 'Aleatória',
+                        }[data.clientPixKeyType] || data.clientPixKeyType
+                      }): `
+                    : 'Chave PIX (Cliente): '}
+                </span>
                 {data.clientPixKey}
               </div>
             )}

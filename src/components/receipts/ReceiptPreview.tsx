@@ -13,7 +13,10 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
   const normalizedData = {
     ...data,
     paymentMethod: data.paymentMethod || data.payment_method,
-    clientPixKey: data.clientPixKey || data.pix_key,
+    clientPixKey: data.clientPixKey !== undefined ? data.clientPixKey : data.client_pix_key,
+    clientPixKeyType:
+      data.clientPixKeyType !== undefined ? data.clientPixKeyType : data.client_pix_key_type,
+    issuerPixKey: data.issuerPixKey || data.pix_key,
   }
 
   const pixPayload =

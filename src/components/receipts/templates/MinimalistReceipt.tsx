@@ -68,7 +68,18 @@ export function MinimalistReceipt({ data, documentTitle, pixPayload }: ReceiptTe
             )}
             {data.clientPixKey && (
               <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
-                PIX CLIENTE: {data.clientPixKey}
+                {data.clientPixKeyType
+                  ? `PIX CLIENTE (${
+                      {
+                        cpf: 'CPF',
+                        cnpj: 'CNPJ',
+                        email: 'E-mail',
+                        phone: 'Telefone',
+                        random: 'Aleatória',
+                      }[data.clientPixKeyType] || data.clientPixKeyType
+                    }): `
+                  : 'PIX CLIENTE: '}
+                {data.clientPixKey}
               </div>
             )}
           </div>

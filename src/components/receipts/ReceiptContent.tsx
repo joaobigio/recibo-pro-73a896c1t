@@ -61,7 +61,22 @@ export function ReceiptContent({
           {data.clientPixKey && (
             <span>
               {' '}
-              Chave PIX do pagador: <strong className="font-semibold">{data.clientPixKey}</strong>.
+              {data.clientPixKeyType ? (
+                <>
+                  Chave PIX do pagador (
+                  {{
+                    cpf: 'CPF',
+                    cnpj: 'CNPJ',
+                    email: 'E-mail',
+                    phone: 'Telefone',
+                    random: 'Aleatória',
+                  }[data.clientPixKeyType] || data.clientPixKeyType}
+                  ):
+                </>
+              ) : (
+                'Chave PIX do pagador:'
+              )}{' '}
+              <strong className="font-semibold">{data.clientPixKey}</strong>.
             </span>
           )}
         </p>
@@ -87,7 +102,23 @@ export function ReceiptContent({
           )}
           {data.clientPixKey && (
             <span>
-              , com Chave PIX <strong className="font-semibold">{data.clientPixKey}</strong>
+              , com{' '}
+              {data.clientPixKeyType ? (
+                <>
+                  Chave PIX (
+                  {{
+                    cpf: 'CPF',
+                    cnpj: 'CNPJ',
+                    email: 'E-mail',
+                    phone: 'Telefone',
+                    random: 'Aleatória',
+                  }[data.clientPixKeyType] || data.clientPixKeyType}
+                  )
+                </>
+              ) : (
+                'Chave PIX'
+              )}{' '}
+              <strong className="font-semibold">{data.clientPixKey}</strong>
             </span>
           )}
           , a importância de{' '}
@@ -121,7 +152,23 @@ export function ReceiptContent({
           )}
           {data.clientPixKey && (
             <span>
-              , Chave PIX: <strong className="font-semibold">{data.clientPixKey}</strong>
+              ,{' '}
+              {data.clientPixKeyType ? (
+                <>
+                  Chave PIX (
+                  {{
+                    cpf: 'CPF',
+                    cnpj: 'CNPJ',
+                    email: 'E-mail',
+                    phone: 'Telefone',
+                    random: 'Aleatória',
+                  }[data.clientPixKeyType] || data.clientPixKeyType}
+                  ):
+                </>
+              ) : (
+                'Chave PIX:'
+              )}{' '}
+              <strong className="font-semibold">{data.clientPixKey}</strong>
             </span>
           )}
           , no valor total de{' '}
@@ -157,7 +204,23 @@ export function ReceiptContent({
           )}
           {data.clientPixKey && (
             <span>
-              , Chave PIX: <strong className="font-semibold">{data.clientPixKey}</strong>
+              ,{' '}
+              {data.clientPixKeyType ? (
+                <>
+                  Chave PIX (
+                  {{
+                    cpf: 'CPF',
+                    cnpj: 'CNPJ',
+                    email: 'E-mail',
+                    phone: 'Telefone',
+                    random: 'Aleatória',
+                  }[data.clientPixKeyType] || data.clientPixKeyType}
+                  ):
+                </>
+              ) : (
+                'Chave PIX:'
+              )}{' '}
+              <strong className="font-semibold">{data.clientPixKey}</strong>
             </span>
           )}
           , pelo valor acordado de{' '}

@@ -129,7 +129,9 @@ export default function Generator() {
         data: {
           ...formData,
           payment_method: formData.paymentMethod,
-          pix_key: formData.clientPixKey || formData.issuerPixKey,
+          pix_key: formData.issuerPixKey,
+          client_pix_key: formData.clientPixKey,
+          client_pix_key_type: formData.clientPixKeyType,
         },
       })
       if (error) throw error
