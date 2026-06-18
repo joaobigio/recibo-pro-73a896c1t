@@ -122,7 +122,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
           </p>
 
           {data.observations && (
-            <p className="pt-2">
+            <p className="pt-2 break-words [overflow-wrap:anywhere]">
               <strong className="font-bold text-black">Observação:</strong> {data.observations}
             </p>
           )}

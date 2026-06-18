@@ -315,7 +315,9 @@ export function ReceiptContent({
       {data.observations && (
         <div className="mt-6 pt-4 border-t border-dashed print:border-gray-400">
           <p className="text-sm font-semibold mb-1 print:text-gray-800">Observações:</p>
-          <p className="text-sm whitespace-pre-wrap print:text-gray-700">{data.observations}</p>
+          <p className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere] print:text-gray-700">
+            {data.observations}
+          </p>
         </div>
       )}
 
