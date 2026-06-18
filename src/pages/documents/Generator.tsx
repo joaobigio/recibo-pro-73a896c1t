@@ -733,7 +733,9 @@ export default function Generator() {
               </div>
               <Textarea
                 value={formData.observations || ''}
-                onChange={(e) => setFormData((p: any) => ({ ...p, observations: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((p: any) => ({ ...p, observations: e.target.value.toUpperCase() }))
+                }
                 placeholder="Observações que aparecerão no rodapé do documento..."
                 maxLength={300}
                 rows={3}

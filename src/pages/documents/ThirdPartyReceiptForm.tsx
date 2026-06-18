@@ -242,8 +242,14 @@ export default function ThirdPartyReceiptForm() {
           <Input
             id="description"
             required
+            maxLength={50}
             value={formData.description}
-            onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({
+                ...p,
+                description: e.target.value.toUpperCase().replace(/\s{2,}/g, ' '),
+              }))
+            }
             placeholder="Ex: Prestação de serviços..."
             className="uppercase"
           />
@@ -254,14 +260,16 @@ export default function ThirdPartyReceiptForm() {
           <Textarea
             id="observations"
             value={formData.observations}
-            onChange={(e) => setFormData((p) => ({ ...p, observations: e.target.value }))}
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, observations: e.target.value.toUpperCase() }))
+            }
             placeholder="Observações adicionais..."
             className="resize-none uppercase"
             rows={4}
-            maxLength={510}
+            maxLength={300}
           />
           <div className="text-xs text-muted-foreground text-right">
-            {formData.observations.length} / 510 caracteres
+            {formData.observations.length} / 300 caracteres
           </div>
         </div>
 

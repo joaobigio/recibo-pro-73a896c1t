@@ -57,7 +57,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
         </div>
 
         <div className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800">
-          <p>
+          <p className="text-justify hyphens-auto">
             Recebi de{' '}
             <strong className="font-bold uppercase text-black">
               {data.issuerName || profile?.name || '________________________________________'}
@@ -73,61 +73,70 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
             </strong>
             , referente {data.referencePrefix || 'à'}{' '}
             <strong className="font-bold uppercase text-black break-words">
-              {data.description ||
-                '________________________________________________________________'}
+              {data.description
+                ? data.description.replace(/\s+/g, ' ')
+                : '________________________________________________________________'}
             </strong>
             .
           </p>
 
-          {(data.paymentMethod || data.clientPixKey) && (
-            <p className="pt-2">
-              {data.paymentMethod && (
+          {(data.paymentMethod || data.paymentMethods?.length || data.clientPixKey) && (
+            <p className="pt-2 text-left">
+              {(data.paymentMethod || data.paymentMethods?.length) && (
                 <>
                   Pagamento via{' '}
                   <strong className="font-bold uppercase text-black">
-                    {data.paymentMethod === 'outros' && data.paymentMethodDetails
-                      ? data.paymentMethodDetails
-                      : (
-                          {
-                            pix: 'PIX',
-                            dinheiro: 'Dinheiro',
-                            cartao_credito: 'Cartão de Crédito',
-                            cartao_debito: 'Cartão de Débito',
-                            transferencia: 'Transferência Bancária',
-                            boleto: 'Boleto',
-                            outros: 'Outros',
-                          } as Record<string, string>
-                        )[data.paymentMethod] || data.paymentMethod}
+                    {data.paymentMethods && data.paymentMethods.length > 0
+                      ? data.paymentMethods.map((m) => m.type).join(', ')
+                      : data.paymentMethod === 'outros' && data.paymentMethodDetails
+                        ? data.paymentMethodDetails
+                        : (
+                            {
+                              pix: 'PIX',
+                              dinheiro: 'Dinheiro',
+                              cartao_credito: 'Cartão de Crédito',
+                              cartao_debito: 'Cartão de Débito',
+                              transferencia: 'Transferência Bancária',
+                              boleto: 'Boleto',
+                              outros: 'Outros',
+                            } as Record<string, string>
+                          )[data.paymentMethod || ''] || data.paymentMethod}
                   </strong>
                 </>
               )}
-              {data.clientPixKey && (!data.paymentMethod || data.paymentMethod === 'pix') && (
-                <>
-                  {data.paymentMethod ? ' - Chave (' : 'Chave PIX ('}
-                  {{
-                    cpf: 'CPF',
-                    cnpj: 'CNPJ',
-                    email: 'E-mail',
-                    phone: 'Telefone',
-                    random: 'Aleatória',
-                  }[data.clientPixKeyType || ''] ||
-                    data.clientPixKeyType ||
-                    'Aleatória'}
-                  ): <strong className="font-bold uppercase text-black">{data.clientPixKey}</strong>
-                </>
-              )}
+              {data.clientPixKey &&
+                (!data.paymentMethod ||
+                  data.paymentMethod === 'pix' ||
+                  data.paymentMethods?.some((m) => m.type.toLowerCase() === 'pix')) && (
+                  <>
+                    {data.paymentMethod || data.paymentMethods?.length
+                      ? ' - Chave ('
+                      : 'Chave PIX ('}
+                    {{
+                      cpf: 'CPF',
+                      cnpj: 'CNPJ',
+                      email: 'E-mail',
+                      phone: 'Telefone',
+                      random: 'Aleatória',
+                    }[data.clientPixKeyType || ''] ||
+                      data.clientPixKeyType ||
+                      'Aleatória'}
+                    ):{' '}
+                    <strong className="font-bold uppercase text-black">{data.clientPixKey}</strong>
+                  </>
+                )}
             </p>
           )}
 
-          <p>
+          <p className="text-left">
             Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável
             quitação pelo valor recebido.
           </p>
 
           {data.observations && (
-            <p className="pt-2 break-words [overflow-wrap:anywhere]">
-              <strong className="font-bold uppercase text-black">Observação:</strong>{' '}
-              {data.observations}
+            <p className="pt-2 break-words [overflow-wrap:anywhere] text-left">
+              <strong className="font-bold uppercase text-black">OBSERVAÇÃO:</strong>{' '}
+              {data.observations.replace(/\s+/g, ' ')}
             </p>
           )}
         </div>
@@ -143,7 +152,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
           <p className="font-bold uppercase text-lg text-gray-900">
             {data.clientName || 'NOME DO RECEBEDOR'}
           </p>
-          <p className="text-gray-800 text-base">
+          <p className="text-gray-800 text-base font-medium uppercase mt-1">
             CPF {data.clientDocument ? maskCpfCnpj(data.clientDocument) : '___________________'}
           </p>
         </div>
