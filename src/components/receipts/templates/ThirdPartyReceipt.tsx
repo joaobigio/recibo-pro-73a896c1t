@@ -76,6 +76,46 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
             .
           </p>
 
+          {(data.paymentMethod || data.clientPixKey) && (
+            <p className="pt-2">
+              {data.paymentMethod && (
+                <>
+                  Pagamento via{' '}
+                  <strong className="font-bold text-black">
+                    {data.paymentMethod === 'outros' && data.paymentMethodDetails
+                      ? data.paymentMethodDetails
+                      : (
+                          {
+                            pix: 'PIX',
+                            dinheiro: 'Dinheiro',
+                            cartao_credito: 'Cartão de Crédito',
+                            cartao_debito: 'Cartão de Débito',
+                            transferencia: 'Transferência Bancária',
+                            boleto: 'Boleto',
+                            outros: 'Outros',
+                          } as Record<string, string>
+                        )[data.paymentMethod] || data.paymentMethod}
+                  </strong>
+                </>
+              )}
+              {data.clientPixKey && (!data.paymentMethod || data.paymentMethod === 'pix') && (
+                <>
+                  {data.paymentMethod ? ' - Chave (' : 'Chave PIX ('}
+                  {{
+                    cpf: 'CPF',
+                    cnpj: 'CNPJ',
+                    email: 'E-mail',
+                    phone: 'Telefone',
+                    random: 'Aleatória',
+                  }[data.clientPixKeyType || ''] ||
+                    data.clientPixKeyType ||
+                    'Aleatória'}
+                  ): <strong className="font-bold text-black">{data.clientPixKey}</strong>
+                </>
+              )}
+            </p>
+          )}
+
           <p>
             Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável
             quitação pelo valor recebido.
