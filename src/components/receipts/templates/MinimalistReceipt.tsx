@@ -61,11 +61,6 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
                     )[data.paymentMethod] || data.paymentMethod}
               </div>
             )}
-            {data.paymentMethod === 'pix' && data.issuerPixKey && (
-              <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
-                PIX EMISSOR: {data.issuerPixKey}
-              </div>
-            )}
             {data.clientPixKey && (
               <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
                 {data.clientPixKeyType

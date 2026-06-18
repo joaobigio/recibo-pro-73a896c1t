@@ -52,9 +52,7 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
           className="space-y-4 text-[1.1rem] leading-relaxed text-justify text-gray-800"
         />
 
-        {(data.paymentMethod ||
-          data.clientPixKey ||
-          (data.paymentMethod === 'pix' && data.issuerPixKey)) && (
+        {(data.paymentMethod || data.clientPixKey) && (
           <div className="mt-6 text-[1.1rem] text-gray-800 space-y-1">
             {data.paymentMethod && (
               <div>
@@ -72,12 +70,6 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
                         outros: 'Outros',
                       } as Record<string, string>
                     )[data.paymentMethod] || data.paymentMethod}
-              </div>
-            )}
-            {data.paymentMethod === 'pix' && data.issuerPixKey && (
-              <div>
-                <span className="font-bold">Chave PIX (Emissor): </span>
-                {data.issuerPixKey}
               </div>
             )}
             {data.clientPixKey && (

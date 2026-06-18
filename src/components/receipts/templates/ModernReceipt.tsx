@@ -64,14 +64,6 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
                   </span>
                 </div>
               )}
-              {data.paymentMethod === 'pix' && data.issuerPixKey && (
-                <div className="text-sm text-gray-700 font-medium flex items-center gap-2">
-                  <span className="text-gray-500">Chave PIX (Emissor):</span>
-                  <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-900">
-                    {data.issuerPixKey}
-                  </span>
-                </div>
-              )}
               {data.clientPixKey && (
                 <div className="text-sm text-gray-700 font-medium flex items-center gap-2">
                   <span className="text-gray-500">

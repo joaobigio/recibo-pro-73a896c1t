@@ -461,22 +461,6 @@ export default function Generator() {
                 rows={3}
               />
             </div>
-
-            {formData.paymentMethod === 'pix' && !formData.issuerPixKey && (
-              <p className="text-xs text-destructive mt-2">
-                Configure sua chave PIX no perfil (ou insira abaixo temporariamente).
-              </p>
-            )}
-            {formData.paymentMethod === 'pix' && (
-              <div className="space-y-2 pt-2 border-t mt-2">
-                <Label>Sua Chave PIX (Emissor)</Label>
-                <Input
-                  value={formData.issuerPixKey}
-                  onChange={(e) => setFormData((p) => ({ ...p, issuerPixKey: e.target.value }))}
-                  placeholder="ex: celular, cpf, email..."
-                />
-              </div>
-            )}
           </CardContent>
         </Card>
 
