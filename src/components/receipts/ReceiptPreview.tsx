@@ -1,4 +1,3 @@
-import { generatePixPayload } from '@/lib/pix'
 import { ReceiptData } from './types'
 import { ClassicReceipt } from './templates/ClassicReceipt'
 import { ModernReceipt } from './templates/ModernReceipt'
@@ -19,15 +18,6 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
     issuerPixKey: data.issuerPixKey || data.pix_key,
   }
 
-  const pixPayload =
-    normalizedData.showPix && normalizedData.issuerPixKey && normalizedData.amount > 0
-      ? generatePixPayload(
-          normalizedData.issuerPixKey,
-          normalizedData.amount,
-          normalizedData.issuerName || 'Emissor',
-        )
-      : null
-
   const titles: Record<string, string> = {
     receipt: 'Recibo',
     third_party: 'Recibo para Terceiros',
@@ -40,7 +30,7 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
   const documentType = normalizedData.type || 'receipt'
   const documentTitle = titles[documentType] || 'Documento'
 
-  const props = { data: normalizedData, documentTitle, pixPayload }
+  const props = { data: normalizedData, documentTitle }
 
   if (documentType === 'third_party') return <ThirdPartyReceipt {...props} />
 

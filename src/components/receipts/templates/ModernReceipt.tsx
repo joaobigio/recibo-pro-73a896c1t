@@ -3,7 +3,7 @@ import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
 import { ReceiptContent } from '../ReceiptContent'
 
-export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTemplateProps) {
+export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   const { profile } = useAuth()
   const documentType = data.type || 'receipt'
 
@@ -131,20 +131,6 @@ export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTempla
               {data.date ? formatDate(data.date) : '____/____/______'}
             </span>
           </p>
-
-          {pixPayload && (
-            <div className="mt-4 flex flex-col items-center border p-3 rounded-lg bg-gray-50 max-w-[200px]">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(pixPayload)}`}
-                alt="PIX QR Code"
-                className="w-24 h-24 mb-2"
-              />
-              <span className="text-xs font-bold text-gray-800 uppercase mb-1">Pague com PIX</span>
-              <p className="text-[8px] text-gray-500 break-all leading-tight text-center select-all">
-                {pixPayload}
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

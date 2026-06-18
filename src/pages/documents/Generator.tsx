@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -50,7 +49,6 @@ export default function Generator() {
     issuerName: '',
     issuerDocument: '',
     issuerPixKey: '',
-    showPix: false,
     signature: null as string | null,
     paymentMethod: '',
     paymentMethodDetails: '',
@@ -464,20 +462,12 @@ export default function Generator() {
               />
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <Label htmlFor="pix-toggle">Incluir QR Code PIX</Label>
-              <Switch
-                id="pix-toggle"
-                checked={formData.showPix}
-                onCheckedChange={(c) => setFormData((p) => ({ ...p, showPix: c }))}
-              />
-            </div>
-            {(formData.showPix || formData.paymentMethod === 'pix') && !formData.issuerPixKey && (
+            {formData.paymentMethod === 'pix' && !formData.issuerPixKey && (
               <p className="text-xs text-destructive mt-2">
                 Configure sua chave PIX no perfil (ou insira abaixo temporariamente).
               </p>
             )}
-            {(formData.showPix || formData.paymentMethod === 'pix') && (
+            {formData.paymentMethod === 'pix' && (
               <div className="space-y-2 pt-2 border-t mt-2">
                 <Label>Sua Chave PIX (Emissor)</Label>
                 <Input

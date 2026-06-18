@@ -18,7 +18,6 @@ export interface ReceiptData {
   issuerName?: string
   issuerDocument?: string
   issuerPixKey?: string
-  showPix?: boolean
   signature?: string | null
   referencePrefix?: string
   paymentMethods?: { type: string }[]
@@ -34,5 +33,4 @@ export interface ReceiptData {
 export interface ReceiptTemplateProps {
   data: ReceiptData
   documentTitle: string
-  pixPayload: string | null
 }
