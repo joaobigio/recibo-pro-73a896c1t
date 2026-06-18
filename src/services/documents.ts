@@ -9,6 +9,7 @@ export interface Document {
   status: string
   data: any
   created_at: string
+  document_number?: number
 }
 
 export const createDocument = async (userId: string, doc: Partial<Document>) => {
@@ -21,10 +22,28 @@ export const createDocument = async (userId: string, doc: Partial<Document>) => 
       amount: doc.amount || 0,
       data: doc.data || {},
       status: doc.status || 'issued',
+      document_number: doc.document_number,
     })
     .select()
     .single()
   return { data, error }
+}
+
+export const getNextDocumentNumber = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('documents')
+    .select('document_number')
+    .eq('user_id', userId)
+    .not('document_number', 'is', null)
+    .order('document_number', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    return 1
+  }
+
+  return (data?.document_number || 0) + 1
 }
 
 export const getMyDocuments = async (userId: string) => {

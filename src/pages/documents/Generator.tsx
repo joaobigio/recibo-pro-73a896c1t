@@ -15,7 +15,7 @@ import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
 import { useSearchParams } from 'react-router-dom'
 import { getProfile, Profile } from '@/services/profiles'
 import { getClients, Client } from '@/services/clients'
-import { createDocument } from '@/services/documents'
+import { createDocument, getNextDocumentNumber } from '@/services/documents'
 import { useAuth } from '@/hooks/use-auth'
 import { maskCpfCnpj } from '@/lib/format'
 import { toast } from 'sonner'
@@ -28,6 +28,7 @@ export default function Generator() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [clients, setClients] = useState<Client[]>([])
   const [saving, setSaving] = useState(false)
+  const [nextDocNumber, setNextDocNumber] = useState<number>(1)
 
   const [formData, setFormData] = useState<any>({
     type: initialType,
@@ -183,6 +184,13 @@ export default function Generator() {
       getClients().then(({ data }) => {
         if (data) setClients(data)
       })
+      getNextDocumentNumber(user.id).then((num) => {
+        setNextDocNumber(num)
+        setFormData((prev: any) => ({
+          ...prev,
+          documentNumber: String(num).padStart(3, '0'),
+        }))
+      })
     }
   }, [user])
 
@@ -198,8 +206,10 @@ export default function Generator() {
         type: formData.type,
         amount: formData.amount,
         client_id: foundClient ? foundClient.id : undefined,
+        document_number: nextDocNumber,
         data: {
           ...formData,
+          documentNumber: String(nextDocNumber).padStart(3, '0'),
           payment_method: formData.paymentMethod,
           pix_key: formData.issuerPixKey,
           client_pix_key: formData.clientPixKey,
@@ -208,6 +218,13 @@ export default function Generator() {
       })
       if (error) throw error
       toast.success('Recibo salvo com sucesso no histórico!')
+
+      const newNum = nextDocNumber + 1
+      setNextDocNumber(newNum)
+      setFormData((prev: any) => ({
+        ...prev,
+        documentNumber: String(newNum).padStart(3, '0'),
+      }))
     } catch (error) {
       toast.error('Erro ao salvar o recibo.')
     } finally {
@@ -314,10 +331,9 @@ export default function Generator() {
                 <Label>Nº do Recibo/Documento</Label>
                 <Input
                   value={formData.documentNumber || ''}
-                  onChange={(e) =>
-                    setFormData((p: any) => ({ ...p, documentNumber: e.target.value }))
-                  }
-                  placeholder="Ex: 001, 2024-01"
+                  readOnly
+                  disabled
+                  className="bg-muted font-medium"
                 />
               </div>
               <div className="space-y-2">
