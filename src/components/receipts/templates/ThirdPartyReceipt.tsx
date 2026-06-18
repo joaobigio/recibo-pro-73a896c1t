@@ -24,7 +24,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
     >
       <div>
         <div className="flex justify-between items-start mb-6 relative">
@@ -130,9 +130,10 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
       </div>
 
       <div className="mt-16 flex flex-col">
-        <div className="text-right mb-8 text-lg text-gray-800">{formattedDate}</div>
+        <div className="text-right mb-12 text-lg text-gray-800">{formattedDate}</div>
 
-        <div className="text-center w-full max-w-md mx-auto relative mt-8">
+        <div className="text-center w-full max-w-md mx-auto relative mt-12">
+          <div className="border-t border-gray-800 w-full mb-2"></div>
           <p className="font-bold uppercase text-lg text-gray-900">
             {data.clientName || 'NOME DO RECEBEDOR'}
           </p>

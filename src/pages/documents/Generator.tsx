@@ -196,6 +196,17 @@ export default function Generator() {
 
   const handleSave = async () => {
     if (!user) return
+
+    if ((formData.description || '').length > 150) {
+      toast.error('O campo "Referente a" deve ter no máximo 150 caracteres.')
+      return
+    }
+
+    if ((formData.observations || '').length > 300) {
+      toast.error('O campo "Observações" deve ter no máximo 300 caracteres.')
+      return
+    }
+
     setSaving(true)
     try {
       const foundClient = clients.find(
@@ -697,19 +708,31 @@ export default function Generator() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Referente a (Descrição Resumida)</Label>
+              <div className="flex justify-between items-center">
+                <Label>Referente a (Descrição Resumida)</Label>
+                <span className="text-xs text-muted-foreground">
+                  {(formData.description || '').length}/150
+                </span>
+              </div>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData((p: any) => ({ ...p, description: e.target.value }))}
+                maxLength={150}
                 rows={2}
               />
             </div>
             <div className="space-y-2">
-              <Label>Observações</Label>
+              <div className="flex justify-between items-center">
+                <Label>Observações</Label>
+                <span className="text-xs text-muted-foreground">
+                  {(formData.observations || '').length}/300
+                </span>
+              </div>
               <Textarea
                 value={formData.observations || ''}
                 onChange={(e) => setFormData((p: any) => ({ ...p, observations: e.target.value }))}
                 placeholder="Observações que aparecerão no rodapé do documento..."
+                maxLength={300}
                 rows={3}
               />
             </div>

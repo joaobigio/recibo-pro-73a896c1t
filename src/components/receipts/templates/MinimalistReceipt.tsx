@@ -15,7 +15,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
     >
       <div>
         <div className="flex justify-between items-start mb-6 relative">
@@ -88,8 +88,9 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
         />
       </div>
 
-      <div className="mt-16 flex justify-between items-end">
+      <div className="mt-20 flex justify-between items-end">
         <div className="text-center w-3/5">
+          <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
           <p className="font-bold">{data.issuerName || 'Nome do Emissor'}</p>
           <p className="text-sm text-gray-600">
             CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
