@@ -18,10 +18,12 @@ import {
   Legend,
 } from 'recharts'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
-import { FileText, DollarSign, Users, TrendingUp } from 'lucide-react'
+import { FileText, DollarSign, Users, TrendingUp, PlusCircle } from 'lucide-react'
 import { format, subDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useAuth } from '@/hooks/use-auth'
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
 
 export default function Index() {
   const { user } = useAuth()
@@ -109,9 +111,17 @@ export default function Index() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Acompanhamento de emissões e faturamento.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">Acompanhamento de emissões e faturamento.</p>
+        </div>
+        <Button asChild size="lg" className="gap-2 sm:w-auto w-full">
+          <Link to="/gerador">
+            <PlusCircle className="h-5 w-5" />
+            Gerar Novo Recibo
+          </Link>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
