@@ -86,7 +86,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
           data={data}
           documentType={documentType}
           documentTitle={documentTitle}
-          className="space-y-4 text-[1.1rem] leading-relaxed text-justify text-gray-800"
+          className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800"
         />
       </div>
 

@@ -719,7 +719,6 @@ export default function Generator() {
                 onChange={(e) => setFormData((p: any) => ({ ...p, description: e.target.value }))}
                 maxLength={150}
                 rows={2}
-                className="uppercase"
               />
             </div>
             <div className="space-y-2">
@@ -735,7 +734,6 @@ export default function Generator() {
                 placeholder="Observações que aparecerão no rodapé do documento..."
                 maxLength={300}
                 rows={3}
-                className="uppercase"
               />
             </div>
           </CardContent>

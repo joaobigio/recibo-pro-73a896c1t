@@ -56,7 +56,7 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
           </div>
         </div>
 
-        <div className="space-y-4 text-[1.1rem] leading-relaxed text-justify text-gray-800">
+        <div className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800">
           <p>
             Recebi de{' '}
             <strong className="font-bold uppercase text-black">
