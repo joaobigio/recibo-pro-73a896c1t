@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { SignaturePad } from '@/components/SignaturePad'
 import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
 import { useSearchParams } from 'react-router-dom'
 import { getProfile, Profile } from '@/services/profiles'
@@ -49,7 +48,6 @@ export default function Generator() {
     issuerName: '',
     issuerDocument: '',
     issuerPixKey: '',
-    signature: null as string | null,
     paymentMethod: '',
     paymentMethodDetails: '',
     documentNumber: '',
@@ -699,18 +697,6 @@ export default function Generator() {
                 rows={3}
               />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Assinatura</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SignaturePad
-              className="h-32 w-full"
-              onSave={(sig) => setFormData((p) => ({ ...p, signature: sig }))}
-            />
           </CardContent>
         </Card>
       </div>

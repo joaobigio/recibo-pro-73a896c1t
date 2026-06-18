@@ -101,15 +101,6 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
 
       <div className="mt-16 flex justify-between items-end">
         <div className="text-center w-3/5">
-          <div className="border-b border-black mb-2 mx-8 h-16 flex items-end justify-center relative">
-            {data.signature && (
-              <img
-                src={data.signature}
-                alt="Assinatura"
-                className="absolute bottom-0 h-16 object-contain"
-              />
-            )}
-          </div>
           <p className="font-bold">{data.issuerName || 'Nome do Emissor'}</p>
           <p className="text-sm text-gray-600">
             CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}

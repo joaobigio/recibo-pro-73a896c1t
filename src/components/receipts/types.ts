@@ -18,7 +18,6 @@ export interface ReceiptData {
   issuerName?: string
   issuerDocument?: string
   issuerPixKey?: string
-  signature?: string | null
   referencePrefix?: string
   paymentMethods?: { type: string }[]
   paymentMethod?: string

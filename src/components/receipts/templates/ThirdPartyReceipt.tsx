@@ -130,10 +130,9 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
       </div>
 
       <div className="mt-16 flex flex-col">
-        <div className="text-right mb-16 text-lg text-gray-800">{formattedDate}</div>
+        <div className="text-right mb-8 text-lg text-gray-800">{formattedDate}</div>
 
-        <div className="text-center w-full max-w-md mx-auto relative">
-          <div className="border-b border-black mb-2 h-8 flex justify-center items-end relative"></div>
+        <div className="text-center w-full max-w-md mx-auto relative mt-8">
           <p className="font-bold uppercase text-lg text-gray-900">
             {data.clientName || 'NOME DO RECEBEDOR'}
           </p>
