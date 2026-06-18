@@ -126,7 +126,11 @@ export default function Generator() {
         type: formData.type,
         amount: formData.amount,
         client_id: foundClient ? foundClient.id : undefined,
-        data: formData,
+        data: {
+          ...formData,
+          payment_method: formData.paymentMethod,
+          pix_key: formData.clientPixKey || formData.issuerPixKey,
+        },
       })
       if (error) throw error
       toast.success('Recibo salvo com sucesso no histórico!')
@@ -466,17 +470,18 @@ export default function Generator() {
                 onCheckedChange={(c) => setFormData((p) => ({ ...p, showPix: c }))}
               />
             </div>
-            {formData.showPix && !formData.issuerPixKey && (
-              <p className="text-xs text-destructive">
+            {(formData.showPix || formData.paymentMethod === 'pix') && !formData.issuerPixKey && (
+              <p className="text-xs text-destructive mt-2">
                 Configure sua chave PIX no perfil (ou insira abaixo temporariamente).
               </p>
             )}
-            {formData.showPix && (
-              <div className="space-y-2 pt-2 border-t">
-                <Label>Sua Chave PIX</Label>
+            {(formData.showPix || formData.paymentMethod === 'pix') && (
+              <div className="space-y-2 pt-2 border-t mt-2">
+                <Label>Sua Chave PIX (Emissor)</Label>
                 <Input
                   value={formData.issuerPixKey}
                   onChange={(e) => setFormData((p) => ({ ...p, issuerPixKey: e.target.value }))}
+                  placeholder="ex: celular, cpf, email..."
                 />
               </div>
             )}

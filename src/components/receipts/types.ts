@@ -25,6 +25,8 @@ export interface ReceiptData {
   paymentMethod?: string
   paymentMethodDetails?: string
   observations?: string
+  payment_method?: string
+  pix_key?: string
 }
 
 export interface ReceiptTemplateProps {

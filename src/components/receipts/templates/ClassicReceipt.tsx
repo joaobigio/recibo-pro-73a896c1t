@@ -52,22 +52,40 @@ export function ClassicReceipt({ data, documentTitle, pixPayload }: ReceiptTempl
           className="space-y-4 text-[1.1rem] leading-relaxed text-justify text-gray-800"
         />
 
-        {data.paymentMethod && (
-          <div className="mt-6 text-[1.1rem] text-gray-800">
-            <span className="font-bold">Forma de Pagamento: </span>
-            {data.paymentMethod === 'outros' && data.paymentMethodDetails
-              ? data.paymentMethodDetails
-              : (
-                  {
-                    pix: 'Pix',
-                    dinheiro: 'Dinheiro',
-                    cartao_credito: 'Cartão de Crédito',
-                    cartao_debito: 'Cartão de Débito',
-                    transferencia: 'Transferência Bancária',
-                    boleto: 'Boleto',
-                    outros: 'Outros',
-                  } as Record<string, string>
-                )[data.paymentMethod] || data.paymentMethod}
+        {(data.paymentMethod ||
+          data.clientPixKey ||
+          (data.paymentMethod === 'pix' && data.issuerPixKey)) && (
+          <div className="mt-6 text-[1.1rem] text-gray-800 space-y-1">
+            {data.paymentMethod && (
+              <div>
+                <span className="font-bold">Forma de Pagamento: </span>
+                {data.paymentMethod === 'outros' && data.paymentMethodDetails
+                  ? data.paymentMethodDetails
+                  : (
+                      {
+                        pix: 'Pix',
+                        dinheiro: 'Dinheiro',
+                        cartao_credito: 'Cartão de Crédito',
+                        cartao_debito: 'Cartão de Débito',
+                        transferencia: 'Transferência Bancária',
+                        boleto: 'Boleto',
+                        outros: 'Outros',
+                      } as Record<string, string>
+                    )[data.paymentMethod] || data.paymentMethod}
+              </div>
+            )}
+            {data.paymentMethod === 'pix' && data.issuerPixKey && (
+              <div>
+                <span className="font-bold">Chave PIX (Emissor): </span>
+                {data.issuerPixKey}
+              </div>
+            )}
+            {data.clientPixKey && (
+              <div>
+                <span className="font-bold">Chave PIX (Cliente): </span>
+                {data.clientPixKey}
+              </div>
+            )}
           </div>
         )}
       </div>
