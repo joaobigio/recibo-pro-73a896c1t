@@ -38,9 +38,33 @@ export function ModernReceipt({ data, documentTitle, pixPayload }: ReceiptTempla
           <div className="w-1/3"></div>
         </div>
 
-        <div className="flex justify-between items-end mb-8">
-          <div className="text-sm text-gray-700 font-medium">Nº {receiptNumber}</div>
-          <div className="border border-gray-400 px-4 py-1.5 font-bold text-xl rounded bg-white min-w-[140px] text-center shadow-sm">
+        <div className="flex justify-between items-end mb-8 border-b pb-4">
+          <div>
+            <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mb-1">
+              Nº {receiptNumber}
+            </div>
+            {data.paymentMethod && (
+              <div className="text-sm text-gray-700 font-medium flex items-center gap-2">
+                <span className="text-gray-500">Pagamento via:</span>
+                <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-900">
+                  {data.paymentMethod === 'outros' && data.paymentMethodDetails
+                    ? data.paymentMethodDetails
+                    : (
+                        {
+                          pix: 'Pix',
+                          dinheiro: 'Dinheiro',
+                          cartao_credito: 'Cartão de Crédito',
+                          cartao_debito: 'Cartão de Débito',
+                          transferencia: 'Transferência Bancária',
+                          boleto: 'Boleto',
+                          outros: 'Outros',
+                        } as Record<string, string>
+                      )[data.paymentMethod] || data.paymentMethod}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="bg-gray-900 text-white px-6 py-2 font-bold text-2xl rounded-lg shadow-md min-w-[160px] text-center">
             {formatCurrency(data.amount)}
           </div>
         </div>

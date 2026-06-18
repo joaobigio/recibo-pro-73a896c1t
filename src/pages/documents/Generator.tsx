@@ -44,6 +44,8 @@ export default function Generator() {
     issuerPixKey: '',
     showPix: false,
     signature: null as string | null,
+    paymentMethod: '',
+    paymentMethodDetails: '',
   })
 
   const handleClientNameChange = (name: string) => {
@@ -212,6 +214,38 @@ export default function Generator() {
                 onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Forma de Pagamento</Label>
+              <Select
+                value={formData.paymentMethod || undefined}
+                onValueChange={(val) => setFormData((p: any) => ({ ...p, paymentMethod: val }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pix">Pix</SelectItem>
+                  <SelectItem value="dinheiro">Dinheiro</SelectItem>
+                  <SelectItem value="cartao_credito">Cartão de Crédito</SelectItem>
+                  <SelectItem value="cartao_debito">Cartão de Débito</SelectItem>
+                  <SelectItem value="transferencia">Transferência Bancária</SelectItem>
+                  <SelectItem value="boleto">Boleto</SelectItem>
+                  <SelectItem value="outros">Outros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {formData.paymentMethod === 'outros' && (
+              <div className="space-y-2">
+                <Label>Especifique a forma de pagamento</Label>
+                <Input
+                  value={formData.paymentMethodDetails || ''}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, paymentMethodDetails: e.target.value }))
+                  }
+                  placeholder="Ex: Cheque"
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 

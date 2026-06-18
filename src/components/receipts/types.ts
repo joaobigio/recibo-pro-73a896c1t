@@ -14,6 +14,8 @@ export interface ReceiptData {
   signature?: string | null
   referencePrefix?: string
   paymentMethods?: { type: string }[]
+  paymentMethod?: string
+  paymentMethodDetails?: string
   observations?: string
 }
 

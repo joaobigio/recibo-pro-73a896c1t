@@ -40,8 +40,27 @@ export function MinimalistReceipt({ data, documentTitle, pixPayload }: ReceiptTe
 
         <div className="flex justify-between items-end mb-8">
           <div className="text-sm text-gray-700 font-medium">Nº {receiptNumber}</div>
-          <div className="border border-gray-400 px-4 py-1.5 font-bold text-xl rounded bg-white min-w-[140px] text-center shadow-sm">
-            {formatCurrency(data.amount)}
+          <div className="text-right">
+            <div className="font-light text-3xl tracking-tight text-gray-900 mb-1">
+              {formatCurrency(data.amount)}
+            </div>
+            {data.paymentMethod && (
+              <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+                {data.paymentMethod === 'outros' && data.paymentMethodDetails
+                  ? data.paymentMethodDetails
+                  : (
+                      {
+                        pix: 'Pix',
+                        dinheiro: 'Dinheiro',
+                        cartao_credito: 'Cartão de Crédito',
+                        cartao_debito: 'Cartão de Débito',
+                        transferencia: 'Transferência Bancária',
+                        boleto: 'Boleto',
+                        outros: 'Outros',
+                      } as Record<string, string>
+                    )[data.paymentMethod] || data.paymentMethod}
+              </div>
+            )}
           </div>
         </div>
 
