@@ -45,7 +45,7 @@ export default function Generator() {
     clientCity: '',
     clientState: '',
     clientCep: '',
-    description: 'Serviços prestados',
+    description: 'SERVIÇOS PRESTADOS',
     issuerName: '',
     issuerDocument: '',
     issuerPixKey: '',
@@ -197,8 +197,8 @@ export default function Generator() {
   const handleSave = async () => {
     if (!user) return
 
-    if ((formData.description || '').length > 150) {
-      toast.error('O campo "Referente a" deve ter no máximo 150 caracteres.')
+    if ((formData.description || '').length > 50) {
+      toast.error('O campo "Referente a" deve ter no máximo 50 caracteres.')
       return
     }
 
@@ -711,13 +711,16 @@ export default function Generator() {
               <div className="flex justify-between items-center">
                 <Label>Referente a (Descrição Resumida)</Label>
                 <span className="text-xs text-muted-foreground">
-                  {(formData.description || '').length}/150
+                  {(formData.description || '').length}/50
                 </span>
               </div>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData((p: any) => ({ ...p, description: e.target.value }))}
-                maxLength={150}
+                onChange={(e) => {
+                  const val = e.target.value.toUpperCase().replace(/\s{2,}/g, ' ')
+                  setFormData((p: any) => ({ ...p, description: val }))
+                }}
+                maxLength={50}
                 rows={2}
               />
             </div>

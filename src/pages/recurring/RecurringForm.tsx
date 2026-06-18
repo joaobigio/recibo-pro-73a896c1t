@@ -50,6 +50,11 @@ export default function RecurringForm() {
       return
     }
 
+    if ((formData.description || '').length > 50) {
+      toast.error('A descrição deve ter no máximo 50 caracteres.')
+      return
+    }
+
     setLoading(true)
     const amountParsed = parseFloat(formData.amount.replace(/\./g, '').replace(',', '.')) || 0
 
@@ -174,12 +179,21 @@ export default function RecurringForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descrição Padrão do Recibo</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="description">Descrição Padrão do Recibo</Label>
+                <span className="text-xs text-muted-foreground">
+                  {(formData.description || '').length}/50
+                </span>
+              </div>
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
-                placeholder="Ex: Referente a prestação de serviços de manutenção mensal..."
+                onChange={(e) => {
+                  const val = e.target.value.toUpperCase().replace(/\s{2,}/g, ' ')
+                  setFormData((p) => ({ ...p, description: val }))
+                }}
+                placeholder="EX: REFERENTE A PRESTAÇÃO DE SERVIÇOS..."
+                maxLength={50}
                 rows={3}
               />
             </div>
