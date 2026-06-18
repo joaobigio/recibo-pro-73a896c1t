@@ -38,6 +38,8 @@ export default function Generator() {
     date: new Date().toISOString().split('T')[0],
     clientName: '',
     clientDocument: '',
+    clientPixKey: '',
+    clientPixKeyType: '',
     description: 'Serviços prestados',
     issuerName: '',
     issuerDocument: '',
@@ -49,10 +51,22 @@ export default function Generator() {
   })
 
   const handleClientNameChange = (name: string) => {
-    setFormData((p) => ({ ...p, clientName: name }))
+    setFormData((p: any) => ({ ...p, clientName: name }))
     const found = clients.find((c) => c.name.toLowerCase() === name.toLowerCase())
     if (found) {
-      setFormData((p) => ({ ...p, clientDocument: found.document || '' }))
+      setFormData((p: any) => ({
+        ...p,
+        clientDocument: found.document || '',
+        clientPixKey: found.pix_key || '',
+        clientPixKeyType: found.pix_key_type || '',
+      }))
+    } else if (name.trim() === '') {
+      setFormData((p: any) => ({
+        ...p,
+        clientDocument: '',
+        clientPixKey: '',
+        clientPixKeyType: '',
+      }))
     }
   }
 
@@ -302,10 +316,43 @@ export default function Generator() {
               <Input
                 value={formData.clientDocument}
                 onChange={(e) =>
-                  setFormData((p) => ({ ...p, clientDocument: maskCpfCnpj(e.target.value) }))
+                  setFormData((p: any) => ({ ...p, clientDocument: maskCpfCnpj(e.target.value) }))
                 }
                 placeholder="000.000.000-00 ou 00.000.000/0000-00"
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Tipo de Chave PIX</Label>
+                <Select
+                  value={formData.clientPixKeyType || undefined}
+                  onValueChange={(val) =>
+                    setFormData((p: any) => ({ ...p, clientPixKeyType: val }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cpf">CPF</SelectItem>
+                    <SelectItem value="cnpj">CNPJ</SelectItem>
+                    <SelectItem value="email">E-mail</SelectItem>
+                    <SelectItem value="phone">Telefone</SelectItem>
+                    <SelectItem value="random">Chave Aleatória</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Chave PIX</Label>
+                <Input
+                  value={formData.clientPixKey || ''}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, clientPixKey: e.target.value }))
+                  }
+                  placeholder="Chave PIX do cliente"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

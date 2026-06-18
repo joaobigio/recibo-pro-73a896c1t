@@ -6,6 +6,8 @@ export interface ReceiptData {
   date: string
   clientName: string
   clientDocument: string
+  clientPixKey?: string
+  clientPixKeyType?: string
   description: string
   issuerName?: string
   issuerDocument?: string
