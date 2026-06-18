@@ -20,7 +20,7 @@ import { createDocument } from '@/services/documents'
 import { useAuth } from '@/hooks/use-auth'
 import { maskCpfCnpj } from '@/lib/format'
 import { toast } from 'sonner'
-import { Printer, Share2, Save } from 'lucide-react'
+import { Printer, Share2, Save, Search, Plus, Trash2 } from 'lucide-react'
 
 export default function Generator() {
   const { user } = useAuth()
@@ -52,7 +52,83 @@ export default function Generator() {
     signature: null as string | null,
     paymentMethod: '',
     paymentMethodDetails: '',
+    documentNumber: '',
+    observations: '',
+    items: [] as { id: string; description: string; quantity: number; unitPrice: number }[],
+    discount: 0,
+    surcharge: 0,
+    subtotal: 0,
   })
+
+  const [searchingCep, setSearchingCep] = useState(false)
+
+  const handleCepSearch = async () => {
+    const cleanCep = formData.clientCep.replace(/\D/g, '')
+    if (cleanCep.length !== 8) {
+      toast.error('CEP inválido')
+      return
+    }
+
+    setSearchingCep(true)
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await res.json()
+      if (!data.erro) {
+        setFormData((p: any) => ({
+          ...p,
+          clientStreet: data.logradouro || '',
+          clientNeighborhood: data.bairro || '',
+          clientCity: data.localidade || '',
+          clientState: data.uf || '',
+        }))
+        toast.success('Endereço preenchido via CEP!')
+      } else {
+        toast.error('CEP não encontrado')
+      }
+    } catch (error) {
+      toast.error('Erro ao buscar CEP')
+    } finally {
+      setSearchingCep(false)
+    }
+  }
+
+  const addItem = () => {
+    setFormData((p: any) => ({
+      ...p,
+      items: [...p.items, { id: crypto.randomUUID(), description: '', quantity: 1, unitPrice: 0 }],
+    }))
+  }
+
+  const removeItem = (id: string) => {
+    setFormData((p: any) => ({
+      ...p,
+      items: p.items.filter((i: any) => i.id !== id),
+    }))
+  }
+
+  const updateItem = (id: string, field: string, value: any) => {
+    setFormData((p: any) => ({
+      ...p,
+      items: p.items.map((i: any) => (i.id === id ? { ...i, [field]: value } : i)),
+    }))
+  }
+
+  useEffect(() => {
+    if (formData.items && formData.items.length > 0) {
+      const subtotal = formData.items.reduce(
+        (acc: number, item: any) =>
+          acc + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
+        0,
+      )
+      const discount = Number(formData.discount) || 0
+      const surcharge = Number(formData.surcharge) || 0
+      const total = subtotal - discount + surcharge
+
+      if (formData.subtotal !== subtotal || formData.amount !== total) {
+        setFormData((p: any) => ({ ...p, subtotal, amount: total > 0 ? total : 0 }))
+      }
+    }
+  }, [formData.items, formData.discount, formData.surcharge])
 
   const handleClientNameChange = (name: string) => {
     setFormData((p: any) => ({ ...p, clientName: name }))
@@ -235,25 +311,48 @@ export default function Generator() {
                 </Button>
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Nº do Recibo/Documento</Label>
+                <Input
+                  value={formData.documentNumber || ''}
+                  onChange={(e) =>
+                    setFormData((p: any) => ({ ...p, documentNumber: e.target.value }))
+                  }
+                  placeholder="Ex: 001, 2024-01"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Data</Label>
+                <Input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData((p: any) => ({ ...p, date: e.target.value }))}
+                />
+              </div>
+            </div>
             <div className="space-y-2">
-              <Label>Valor (R$)</Label>
+              <Label>Valor Total (R$)</Label>
               <Input
                 type="number"
                 min="0"
                 step="0.01"
-                value={formData.amount || ''}
+                disabled={formData.items && formData.items.length > 0}
+                value={
+                  formData.amount === 0 && (!formData.items || formData.items.length === 0)
+                    ? ''
+                    : formData.amount
+                }
                 onChange={(e) =>
-                  setFormData((p) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))
+                  setFormData((p: any) => ({ ...p, amount: parseFloat(e.target.value) || 0 }))
+                }
+                placeholder={
+                  formData.items && formData.items.length > 0 ? 'Calculado automaticamente' : '0.00'
                 }
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Data</Label>
-              <Input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
-              />
+              {formData.items && formData.items.length > 0 && (
+                <p className="text-xs text-muted-foreground">Valor calculado com base nos itens.</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Forma de Pagamento</Label>
@@ -352,11 +451,27 @@ export default function Generator() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>CEP</Label>
-                <Input
-                  value={formData.clientCep}
-                  onChange={(e) => setFormData((p: any) => ({ ...p, clientCep: e.target.value }))}
-                  placeholder="00000-000"
-                />
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.clientCep}
+                    onChange={(e) => setFormData((p: any) => ({ ...p, clientCep: e.target.value }))}
+                    placeholder="00000-000"
+                    onBlur={(e) => {
+                      if (e.target.value.replace(/\D/g, '').length === 8) {
+                        handleCepSearch()
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleCepSearch}
+                    disabled={searchingCep}
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Rua / Logradouro</Label>
@@ -449,15 +564,138 @@ export default function Generator() {
         </Card>
 
         <Card>
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+            <CardTitle className="text-lg">Itens do Documento</CardTitle>
+            <Button type="button" variant="outline" size="sm" onClick={addItem}>
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Item
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {formData.items && formData.items.length > 0 ? (
+              <div className="space-y-4">
+                {formData.items.map((item: any) => (
+                  <div
+                    key={item.id}
+                    className="grid grid-cols-12 gap-2 items-end border p-3 rounded-md bg-muted/20"
+                  >
+                    <div className="col-span-12 md:col-span-5 space-y-1">
+                      <Label className="text-xs">Descrição</Label>
+                      <Input
+                        value={item.description}
+                        onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                        placeholder="Nome do item/serviço"
+                      />
+                    </div>
+                    <div className="col-span-4 md:col-span-2 space-y-1">
+                      <Label className="text-xs">Qtd</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        step="0.01"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </div>
+                    <div className="col-span-6 md:col-span-3 space-y-1">
+                      <Label className="text-xs">Valor Unit.</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.unitPrice}
+                        onChange={(e) =>
+                          updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)
+                        }
+                      />
+                    </div>
+                    <div className="col-span-2 md:col-span-2 flex justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeItem(item.id)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                  <div className="space-y-2">
+                    <Label>Desconto (R$)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.discount === 0 ? '' : formData.discount}
+                      onChange={(e) =>
+                        setFormData((p: any) => ({
+                          ...p,
+                          discount: parseFloat(e.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Acréscimo (R$)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.surcharge === 0 ? '' : formData.surcharge}
+                      onChange={(e) =>
+                        setFormData((p: any) => ({
+                          ...p,
+                          surcharge: parseFloat(e.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 flex flex-col justify-end">
+                    <div className="text-sm font-medium flex justify-between">
+                      <span>Subtotal:</span>
+                      <span>R$ {(formData.subtotal || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="text-base font-bold flex justify-between text-primary">
+                      <span>Total:</span>
+                      <span>R$ {(formData.amount || 0).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6 text-muted-foreground bg-muted/20 rounded-md border border-dashed">
+                <p className="text-sm">Nenhum item adicionado.</p>
+                <p className="text-xs mt-1">O valor total será manual se não houver itens.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Detalhes</CardTitle>
+            <CardTitle className="text-lg">Detalhes Adicionais</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Referente a (Descrição)</Label>
+              <Label>Referente a (Descrição Resumida)</Label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+                onChange={(e) => setFormData((p: any) => ({ ...p, description: e.target.value }))}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Observações</Label>
+              <Textarea
+                value={formData.observations || ''}
+                onChange={(e) => setFormData((p: any) => ({ ...p, observations: e.target.value }))}
+                placeholder="Observações que aparecerão no rodapé do documento..."
                 rows={3}
               />
             </div>

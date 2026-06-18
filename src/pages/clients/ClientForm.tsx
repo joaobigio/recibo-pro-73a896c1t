@@ -268,6 +268,11 @@ export default function ClientForm() {
                   id="cep"
                   value={formData.cep}
                   onChange={(e) => setFormData((p) => ({ ...p, cep: e.target.value }))}
+                  onBlur={(e) => {
+                    if (e.target.value.replace(/\D/g, '').length === 8) {
+                      handleCepSearch()
+                    }
+                  }}
                   placeholder="00000-000"
                 />
                 <Button

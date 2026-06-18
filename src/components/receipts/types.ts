@@ -28,6 +28,11 @@ export interface ReceiptData {
   pix_key?: string
   client_pix_key?: string
   client_pix_key_type?: string
+  documentNumber?: string
+  items?: { id: string; description: string; quantity: number; unitPrice: number }[]
+  discount?: number
+  surcharge?: number
+  subtotal?: number
 }
 
 export interface ReceiptTemplateProps {

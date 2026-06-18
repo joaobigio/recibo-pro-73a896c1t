@@ -9,6 +9,10 @@ interface ReceiptContentProps {
   className?: string
 }
 
+function formatMoney(value: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+}
+
 export function ReceiptContent({
   data,
   documentType,
@@ -30,8 +34,18 @@ export function ReceiptContent({
 
   const hasAddress = addressParts.trim().length > 0
 
+  const hasItems = data.items && data.items.length > 0
+
   return (
     <div className={className}>
+      {data.documentNumber && (
+        <div className="mb-4 text-right print:mb-2">
+          <span className="font-bold text-sm bg-muted print:bg-transparent print:border print:border-gray-300 px-3 py-1 rounded-md">
+            Nº {data.documentNumber}
+          </span>
+        </div>
+      )}
+
       {documentType === 'promissory' && (
         <p>
           No dia{' '}
@@ -231,22 +245,93 @@ export function ReceiptContent({
         </p>
       )}
 
-      {documentType !== 'promissory' && documentType !== 'budget' && (
-        <p>Para maior clareza e validade, firmo(amos) o presente {documentTitle.toLowerCase()}.</p>
+      {hasItems && (
+        <div className="my-6 print:my-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b-2 border-primary/20 print:border-gray-800">
+                <th className="text-left py-2 font-semibold print:text-gray-800">Descrição</th>
+                <th className="text-right py-2 font-semibold print:text-gray-800">Qtd</th>
+                <th className="text-right py-2 font-semibold print:text-gray-800">V. Unitário</th>
+                <th className="text-right py-2 font-semibold print:text-gray-800">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.items!.map((item: any, i: number) => (
+                <tr key={item.id || i} className="border-b border-muted print:border-gray-300">
+                  <td className="py-2 text-left print:text-gray-800">{item.description || '-'}</td>
+                  <td className="py-2 text-right print:text-gray-800">{item.quantity}</td>
+                  <td className="py-2 text-right print:text-gray-800">
+                    {formatMoney(item.unitPrice || 0)}
+                  </td>
+                  <td className="py-2 text-right print:text-gray-800">
+                    {formatMoney((item.quantity || 0) * (item.unitPrice || 0))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="flex justify-end mt-4">
+            <div className="w-64 space-y-1 text-sm print:text-gray-800">
+              {data.discount ? (
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>{formatMoney(data.subtotal || 0)}</span>
+                </div>
+              ) : null}
+              {data.discount ? (
+                <div className="flex justify-between text-red-600 print:text-gray-800">
+                  <span>Desconto:</span>
+                  <span>-{formatMoney(data.discount)}</span>
+                </div>
+              ) : null}
+              {data.surcharge ? (
+                <div className="flex justify-between text-blue-600 print:text-gray-800">
+                  <span>Acréscimo:</span>
+                  <span>+{formatMoney(data.surcharge)}</span>
+                </div>
+              ) : null}
+              {data.discount || data.surcharge || hasItems ? (
+                <div className="flex justify-between font-bold text-base pt-2 border-t print:border-gray-800 mt-2">
+                  <span>Total:</span>
+                  <span>{formatMoney(data.amount)}</span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
       )}
-      {documentType === 'budget' && <p>Aguardamos aprovação para início dos trabalhos.</p>}
+
+      {documentType !== 'promissory' && documentType !== 'budget' && (
+        <p className="print:text-gray-800">
+          Para maior clareza e validade, firmo(amos) o presente {documentTitle.toLowerCase()}.
+        </p>
+      )}
+      {documentType === 'budget' && (
+        <p className="print:text-gray-800">Aguardamos aprovação para início dos trabalhos.</p>
+      )}
 
       {data.observations && (
-        <div className="mt-4 pt-4 border-t border-dashed">
-          <p className="text-sm font-medium">Observações:</p>
-          <p className="text-sm">{data.observations}</p>
+        <div className="mt-6 pt-4 border-t border-dashed print:border-gray-400">
+          <p className="text-sm font-semibold mb-1 print:text-gray-800">Observações:</p>
+          <p className="text-sm whitespace-pre-wrap print:text-gray-700">{data.observations}</p>
         </div>
       )}
 
       {data.paymentMethods && data.paymentMethods.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm font-medium">
+          <p className="text-sm font-medium print:text-gray-800">
             Forma de Pagamento: {data.paymentMethods.map((m: any) => m.type).join(', ')}
+          </p>
+        </div>
+      )}
+      {data.paymentMethod && (
+        <div className="mt-4">
+          <p className="text-sm font-medium print:text-gray-800">
+            Forma de Pagamento:{' '}
+            <span className="capitalize">{data.paymentMethod.replace('_', ' ')}</span>
+            {data.paymentMethodDetails && ` - ${data.paymentMethodDetails}`}
           </p>
         </div>
       )}

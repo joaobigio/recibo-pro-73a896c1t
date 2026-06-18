@@ -15,7 +15,8 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
     clientPixKey: data.clientPixKey !== undefined ? data.clientPixKey : data.client_pix_key,
     clientPixKeyType:
       data.clientPixKeyType !== undefined ? data.clientPixKeyType : data.client_pix_key_type,
-    issuerPixKey: data.issuerPixKey || data.pix_key,
+    issuerPixKey: undefined,
+    pix_key: undefined,
   }
 
   const titles: Record<string, string> = {
