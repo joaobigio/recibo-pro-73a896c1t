@@ -30,6 +30,7 @@ export default function ThirdPartyReceiptForm() {
     template: 'classic',
     amount: '',
     date: new Date().toISOString().split('T')[0],
+    local: '',
     client_id: '',
     reference: 'à',
     description: '',
@@ -91,6 +92,7 @@ export default function ThirdPartyReceiptForm() {
           template: formData.template,
           amount: amountParsed,
           date: formData.date,
+          local: formData.local,
           clientName: client?.name || '',
           clientDocument: client?.document || '',
           referencePrefix: formData.reference,
@@ -179,7 +181,7 @@ export default function ThirdPartyReceiptForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <Label htmlFor="amount">Valor *</Label>
             <Input
@@ -189,6 +191,15 @@ export default function ThirdPartyReceiptForm() {
               onChange={(e) => setFormData((p) => ({ ...p, amount: e.target.value }))}
               placeholder="R$ 0,00"
               className="text-lg font-medium"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="local">Local</Label>
+            <Input
+              id="local"
+              value={formData.local || ''}
+              onChange={(e) => setFormData((p) => ({ ...p, local: e.target.value }))}
+              placeholder="Ex: São Paulo"
             />
           </div>
           <div className="space-y-2">

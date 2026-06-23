@@ -104,30 +104,33 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
         )}
       </div>
 
-      <div className="mt-24 flex justify-between items-end">
-        <div className="text-center w-3/5">
-          <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
-          <p className="font-bold uppercase">
-            {documentType === 'third_party'
-              ? data.clientName || 'NOME DO RECEBEDOR'
-              : data.issuerName || 'Nome do Emissor'}
+      <div className="mt-16 flex flex-col items-end">
+        <div className="w-3/5 md:w-2/5 min-w-[280px]">
+          <p className="text-right text-gray-700 font-bold uppercase">
+            {data.local ? `${data.local}, ` : ''}
+            {data.date ? formatDate(data.date) : '____/____/______'}
           </p>
-          <p className="text-sm text-gray-600">
-            CPF/CNPJ:{' '}
-            {documentType === 'third_party'
-              ? data.clientDocument
-                ? maskCpfCnpj(data.clientDocument)
-                : '___________________'
-              : data.issuerDocument
-                ? maskCpfCnpj(data.issuerDocument)
-                : 'N/A'}
-          </p>
-        </div>
 
-        <div className="text-right flex flex-col items-end w-2/5">
-          <p className="mb-4 text-gray-700 font-bold uppercase">
-            Data: <span className="">{data.date ? formatDate(data.date) : '____/____/______'}</span>
-          </p>
+          <div className="h-[4.5rem]"></div>
+
+          <div className="text-center">
+            <div className="border-t border-gray-800 w-full mb-2"></div>
+            <p className="font-bold uppercase">
+              {documentType === 'third_party'
+                ? data.clientName || 'NOME DO RECEBEDOR'
+                : data.issuerName || 'Nome do Emissor'}
+            </p>
+            <p className="text-sm text-gray-600">
+              CPF/CNPJ:{' '}
+              {documentType === 'third_party'
+                ? data.clientDocument
+                  ? maskCpfCnpj(data.clientDocument)
+                  : '___________________'
+                : data.issuerDocument
+                  ? maskCpfCnpj(data.issuerDocument)
+                  : 'N/A'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

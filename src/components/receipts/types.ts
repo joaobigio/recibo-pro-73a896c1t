@@ -4,6 +4,7 @@ export interface ReceiptData {
   template?: string
   amount: number
   date: string
+  local?: string
   clientName: string
   clientDocument: string
   clientPixKey?: string

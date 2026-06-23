@@ -101,33 +101,35 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
         )}
       </div>
 
-      <div className="mt-24 flex justify-between items-end">
-        <div className="text-center w-3/5">
-          <div className="border-t border-gray-200 w-4/5 mx-auto mb-3"></div>
-          <p className="font-normal text-gray-800 uppercase tracking-wide">
-            {documentType === 'third_party'
-              ? data.clientName || 'NOME DO RECEBEDOR'
-              : data.issuerName || 'Nome do Emissor'}
-          </p>
-          <p className="text-xs text-gray-400 tracking-widest mt-1">
-            CPF/CNPJ:{' '}
-            {documentType === 'third_party'
-              ? data.clientDocument
-                ? maskCpfCnpj(data.clientDocument)
-                : '___________________'
-              : data.issuerDocument
-                ? maskCpfCnpj(data.issuerDocument)
-                : 'N/A'}
-          </p>
-        </div>
-
-        <div className="text-right flex flex-col items-end w-2/5">
-          <p className="mb-4 text-gray-400 font-light uppercase tracking-widest text-sm">
-            Data:{' '}
+      <div className="mt-16 flex flex-col items-end">
+        <div className="w-3/5 md:w-2/5 min-w-[280px]">
+          <p className="text-right text-gray-400 font-light uppercase tracking-widest text-sm">
+            {data.local ? <span className="text-gray-800">{data.local}, </span> : ''}
             <span className="text-gray-800">
               {data.date ? formatDate(data.date) : '____/____/______'}
             </span>
           </p>
+
+          <div className="h-[4.5rem]"></div>
+
+          <div className="text-center">
+            <div className="border-t border-gray-200 w-full mb-3"></div>
+            <p className="font-normal text-gray-800 uppercase tracking-wide">
+              {documentType === 'third_party'
+                ? data.clientName || 'NOME DO RECEBEDOR'
+                : data.issuerName || 'Nome do Emissor'}
+            </p>
+            <p className="text-xs text-gray-400 tracking-widest mt-1">
+              CPF/CNPJ:{' '}
+              {documentType === 'third_party'
+                ? data.clientDocument
+                  ? maskCpfCnpj(data.clientDocument)
+                  : '___________________'
+                : data.issuerDocument
+                  ? maskCpfCnpj(data.issuerDocument)
+                  : 'N/A'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

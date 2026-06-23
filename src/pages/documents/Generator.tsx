@@ -35,6 +35,7 @@ export default function Generator() {
     template: 'classic',
     amount: 0,
     date: new Date().toISOString().split('T')[0],
+    local: '',
     clientName: '',
     clientDocument: '',
     clientPixKey: '',
@@ -339,7 +340,7 @@ export default function Generator() {
                 </Button>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Nº do Recibo/Documento</Label>
                 <Input
@@ -347,6 +348,14 @@ export default function Generator() {
                   readOnly
                   disabled
                   className="bg-muted font-medium"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Local</Label>
+                <Input
+                  value={formData.local || ''}
+                  onChange={(e) => setFormData((p: any) => ({ ...p, local: e.target.value }))}
+                  placeholder="Ex: São Paulo"
                 />
               </div>
               <div className="space-y-2">
