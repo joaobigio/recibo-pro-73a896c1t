@@ -18,22 +18,23 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
       className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
     >
       <div>
-        <div className="flex justify-between items-start mb-6 relative min-h-[4rem]">
-          <div className="w-1/2 pr-4 z-10">
+        <div className="flex justify-between items-start mb-8 min-h-[6rem] gap-4">
+          <div className="flex-1 pr-4 z-10">
             {profile?.logo_url ? (
               <img
                 src={profile.logo_url}
                 alt="Logo do Emissor"
-                className="h-[80px] sm:h-[100px] md:h-[120px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
+                className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
+                style={{ imageRendering: 'high-quality' }}
               />
             ) : (
-              <div className="font-bold uppercase text-sm break-words pr-4">
+              <div className="font-bold uppercase text-sm break-words pr-4 pt-2">
                 {data.issuerName || profile?.name || 'EMISSOR'}
               </div>
             )}
           </div>
-          <div className="absolute inset-x-0 top-0 flex justify-center items-start pt-2 pointer-events-none">
-            <h2 className="text-xl font-bold uppercase text-gray-900 whitespace-nowrap px-4">
+          <div className="flex-shrink-0 flex justify-end items-start pt-2 z-10">
+            <h2 className="text-2xl font-bold uppercase text-gray-900 whitespace-nowrap text-right drop-shadow-sm">
               {documentTitle}
             </h2>
           </div>
