@@ -16,43 +16,74 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border border-slate-200 shadow-xl rounded-2xl max-w-3xl mx-auto text-slate-800 print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col relative font-sans"
+      className="bg-white p-8 md:p-12 max-w-3xl mx-auto text-slate-800 shadow-2xl rounded-2xl print:shadow-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col relative font-sans border border-slate-100 print:border-none"
     >
-      <div>
-        <div className="flex justify-between items-start mb-8 gap-4">
-          <div className="flex-1 pr-4 z-10">
+      <div className="flex-1">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+          <div className="flex-1">
             {profile?.logo_url ? (
               <img
                 src={profile.logo_url}
                 alt="Logo do Emissor"
-                className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
+                className="h-20 md:h-24 w-auto max-w-full object-contain object-left"
                 style={{ imageRendering: 'high-quality' }}
               />
             ) : (
-              <div className="font-bold uppercase text-sm break-words pr-4 pt-2 text-slate-400">
-                {data.issuerName || profile?.name || 'EMISSOR'}
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-inner">
+                  {(data.issuerName || profile?.name || 'E').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900 uppercase tracking-tight">
+                    {data.issuerName || profile?.name || 'EMISSOR'}
+                  </h1>
+                  {data.issuerDocument && (
+                    <p className="text-sm text-slate-500 font-medium">
+                      {maskCpfCnpj(data.issuerDocument)}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>
-          <div className="flex-shrink-0 flex flex-col items-end pt-2 z-10">
-            <h2 className="text-3xl font-black uppercase text-slate-900 whitespace-nowrap text-right tracking-tight">
+
+          <div className="bg-slate-50 p-6 rounded-2xl w-full md:w-auto md:min-w-[280px] border border-slate-100 shadow-sm text-right">
+            <h2 className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">
               {documentTitle}
             </h2>
-            <div className="text-sm text-slate-400 font-bold uppercase tracking-wider mt-1">
-              Nº {receiptNumber}
-            </div>
-            <div className="mt-4 bg-blue-600 text-white px-6 py-2 font-bold uppercase text-2xl rounded-lg shadow-md min-w-[160px] text-center">
+            <div className="text-3xl font-black text-slate-900 mb-2">
               {formatCurrency(data.amount)}
+            </div>
+            <div className="text-xs font-bold text-slate-400">
+              <span>Nº {receiptNumber}</span>
             </div>
           </div>
         </div>
 
-        <div className="mb-8 border-b border-slate-100 pb-6">
-          <div className="space-y-2 mt-2 flex gap-4 flex-wrap">
+        <div className="mb-10 bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50">
+          {documentType === 'third_party' ? (
+            <ThirdPartyContent
+              data={data}
+              className="space-y-4 text-[1.1rem] leading-relaxed text-slate-700"
+            />
+          ) : (
+            <ReceiptContent
+              data={data}
+              documentType={documentType}
+              documentTitle={documentTitle}
+              className="space-y-4 text-[1.1rem] leading-relaxed text-slate-700"
+            />
+          )}
+        </div>
+
+        {(data.paymentMethod || data.clientPixKey) && (
+          <div className="flex flex-wrap gap-4 mb-8">
             {data.paymentMethod && (
-              <div className="text-xs text-slate-600 font-bold uppercase flex items-center gap-2">
-                <span className="text-slate-400">Pagamento:</span>
-                <span className="bg-slate-100 px-2 py-1 rounded-md text-slate-800">
+              <div className="bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 flex flex-col">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Pagamento via
+                </span>
+                <span className="text-sm font-bold text-slate-700">
                   {data.paymentMethod === 'outros' && data.paymentMethodDetails
                     ? data.paymentMethodDetails
                     : (
@@ -70,61 +101,36 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
               </div>
             )}
             {data.clientPixKey && (
-              <div className="text-xs text-slate-600 font-bold uppercase flex items-center gap-2">
-                <span className="text-slate-400">
-                  {data.clientPixKeyType
-                    ? `PIX Cliente (${
-                        {
-                          cpf: 'CPF',
-                          cnpj: 'CNPJ',
-                          email: 'E-mail',
-                          phone: 'Telefone',
-                          random: 'Aleatória',
-                        }[data.clientPixKeyType] || data.clientPixKeyType
-                      }):`
-                    : 'PIX Cliente:'}
+              <div className="bg-slate-50 px-4 py-3 rounded-xl border border-slate-100 flex flex-col">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  Chave PIX
                 </span>
-                <span className="bg-slate-100 px-2 py-1 rounded-md text-slate-800">
+                <span className="text-sm font-bold text-slate-700">
+                  {data.clientPixKeyType && data.clientPixKeyType !== 'random'
+                    ? `${data.clientPixKeyType.toUpperCase()}: `
+                    : ''}
                   {data.clientPixKey}
                 </span>
               </div>
             )}
           </div>
-        </div>
-
-        {documentType === 'third_party' ? (
-          <ThirdPartyContent
-            data={data}
-            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-slate-700"
-          />
-        ) : (
-          <ReceiptContent
-            data={data}
-            documentType={documentType}
-            documentTitle={documentTitle}
-            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-slate-700"
-          />
         )}
       </div>
 
-      <div className="mt-16 flex flex-col">
-        <div className="w-full">
-          <p className="text-right text-slate-600 font-bold">
-            {data.local ? <span className="text-slate-900">{data.local}, </span> : ''}
-            <span className="text-slate-900 uppercase">
-              {data.date ? formatDate(data.date) : '____/____/______'}
-            </span>
-          </p>
+      <footer className="mt-12 flex flex-col">
+        <div className="text-right text-slate-600 font-medium">
+          {data.local ? <span>{data.local}, </span> : ''}
+          <span>{data.date ? formatDate(data.date) : '____/____/______'}</span>
         </div>
 
         <div className="h-[4.5rem]"></div>
 
-        <div className="w-3/5 md:w-2/5 min-w-[280px] mx-auto text-center">
-          <div className="border-t-2 border-slate-200 w-full mb-3"></div>
-          <p className="font-bold text-slate-900 uppercase">
+        <div className="w-full max-w-[320px] mx-auto text-center flex flex-col items-center">
+          <div className="border-t-2 border-slate-200 w-full mb-4"></div>
+          <p className="font-bold text-slate-900 text-lg uppercase">
             {documentType === 'third_party'
               ? data.clientName || 'NOME DO RECEBEDOR'
-              : data.issuerName || 'Nome do Emissor'}
+              : data.issuerName || 'NOME DO EMISSOR'}
           </p>
           <p className="text-sm font-bold text-slate-900 mt-1">
             CPF/CNPJ:{' '}
@@ -137,7 +143,7 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
                 : 'N/A'}
           </p>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }
