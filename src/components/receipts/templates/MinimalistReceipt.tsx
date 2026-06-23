@@ -101,7 +101,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
         )}
       </div>
 
-      <div className="mt-16 flex justify-between items-end">
+      <div className="mt-24 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-200 w-4/5 mx-auto mb-3"></div>
           <p className="font-normal text-gray-800 uppercase tracking-wide">

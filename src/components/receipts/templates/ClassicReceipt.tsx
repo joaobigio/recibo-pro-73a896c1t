@@ -104,7 +104,7 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
         )}
       </div>
 
-      <div className="mt-12 flex justify-between items-end">
+      <div className="mt-24 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
           <p className="font-bold uppercase">
