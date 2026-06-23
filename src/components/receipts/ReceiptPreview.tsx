@@ -1,7 +1,5 @@
 import { ReceiptData } from './types'
 import { ClassicReceipt } from './templates/ClassicReceipt'
-import { ModernReceipt } from './templates/ModernReceipt'
-import { MinimalistReceipt } from './templates/MinimalistReceipt'
 import { ThirdPartyReceipt } from './templates/ThirdPartyReceipt'
 
 interface ReceiptPreviewProps {
@@ -34,9 +32,6 @@ export function ReceiptPreview({ data }: ReceiptPreviewProps) {
   const props = { data: normalizedData, documentTitle }
 
   if (documentType === 'third_party') return <ThirdPartyReceipt {...props} />
-
-  if (normalizedData.template === 'modern') return <ModernReceipt {...props} />
-  if (normalizedData.template === 'minimalist') return <MinimalistReceipt {...props} />
 
   return <ClassicReceipt {...props} />
 }

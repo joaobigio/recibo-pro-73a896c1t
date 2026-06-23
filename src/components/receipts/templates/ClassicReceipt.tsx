@@ -105,8 +105,8 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
       </div>
 
       <div className="mt-16 flex flex-col">
-        <div className="w-full">
-          <p className="text-right text-gray-700 font-bold">
+        <div className="w-full text-right">
+          <p className="inline-block text-gray-700 font-bold text-right">
             {data.local ? <span>{data.local}, </span> : ''}
             <span className="uppercase">
               {data.date ? formatDate(data.date) : '____/____/______'}
@@ -114,16 +114,16 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
           </p>
         </div>
 
-        <div className="h-[4.5rem]"></div>
+        <div className="h-[4.5rem] w-full block"></div>
 
-        <div className="w-3/5 md:w-2/5 min-w-[280px] mx-auto text-center">
+        <div className="w-3/5 md:w-2/5 min-w-[280px] mx-auto flex flex-col items-center text-center">
           <div className="border-t border-gray-800 w-full mb-2"></div>
-          <p className="font-bold uppercase">
+          <p className="font-bold uppercase text-center w-full">
             {documentType === 'third_party'
               ? data.clientName || 'NOME DO RECEBEDOR'
-              : data.issuerName || 'Nome do Emissor'}
+              : data.issuerName || 'NOME DO EMISSOR'}
           </p>
-          <p className="text-sm font-bold text-gray-800 mt-1">
+          <p className="text-sm font-bold text-gray-800 mt-1 text-center w-full">
             CPF/CNPJ:{' '}
             {documentType === 'third_party'
               ? data.clientDocument
