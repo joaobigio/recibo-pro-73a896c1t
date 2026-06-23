@@ -126,7 +126,7 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
               ? data.clientName || 'NOME DO RECEBEDOR'
               : data.issuerName || 'Nome do Emissor'}
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm font-bold text-slate-900 mt-1">
             CPF/CNPJ:{' '}
             {documentType === 'third_party'
               ? data.clientDocument

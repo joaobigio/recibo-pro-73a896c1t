@@ -123,7 +123,7 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
               ? data.clientName || 'NOME DO RECEBEDOR'
               : data.issuerName || 'Nome do Emissor'}
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm font-bold text-gray-800 mt-1">
             CPF/CNPJ:{' '}
             {documentType === 'third_party'
               ? data.clientDocument

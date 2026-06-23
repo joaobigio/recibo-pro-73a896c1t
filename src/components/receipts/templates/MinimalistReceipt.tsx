@@ -120,7 +120,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
               ? data.clientName || 'NOME DO RECEBEDOR'
               : data.issuerName || 'Nome do Emissor'}
           </p>
-          <p className="text-xs text-gray-400 tracking-widest mt-1">
+          <p className="text-xs font-bold text-gray-800 tracking-widest mt-1">
             CPF/CNPJ:{' '}
             {documentType === 'third_party'
               ? data.clientDocument
