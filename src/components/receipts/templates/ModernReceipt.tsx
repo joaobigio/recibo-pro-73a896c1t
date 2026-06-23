@@ -16,7 +16,7 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border border-slate-200 shadow-xl rounded-2xl max-w-3xl mx-auto text-slate-800 print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 border border-slate-200 shadow-xl rounded-2xl max-w-3xl mx-auto text-slate-800 print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col relative font-sans"
     >
       <div>
         <div className="flex justify-between items-start mb-8 gap-4">
@@ -107,7 +107,7 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
         )}
       </div>
 
-      <div className="mt-20 flex justify-between items-end">
+      <div className="mt-12 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t-2 border-slate-200 w-4/5 mx-auto mb-3"></div>
           <p className="font-bold text-slate-900 uppercase">

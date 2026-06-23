@@ -16,7 +16,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 max-w-3xl mx-auto text-gray-800 print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 max-w-3xl mx-auto text-gray-800 print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col relative font-sans"
     >
       <div>
         <div className="flex justify-between items-start mb-12 gap-4">
@@ -101,7 +101,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
         )}
       </div>
 
-      <div className="mt-24 flex justify-between items-end">
+      <div className="mt-16 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-200 w-4/5 mx-auto mb-3"></div>
           <p className="font-normal text-gray-800 uppercase tracking-wide">
