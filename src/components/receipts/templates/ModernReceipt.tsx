@@ -107,35 +107,35 @@ export function ModernReceipt({ data, documentTitle }: ReceiptTemplateProps) {
         )}
       </div>
 
-      <div className="mt-16 flex flex-col items-end">
-        <div className="w-3/5 md:w-2/5 min-w-[280px]">
-          <p className="text-right text-slate-600 font-bold uppercase">
+      <div className="mt-16 flex flex-col">
+        <div className="w-full">
+          <p className="text-right text-slate-600 font-bold">
             {data.local ? <span className="text-slate-900">{data.local}, </span> : ''}
-            <span className="text-slate-900">
+            <span className="text-slate-900 uppercase">
               {data.date ? formatDate(data.date) : '____/____/______'}
             </span>
           </p>
+        </div>
 
-          <div className="h-[4.5rem]"></div>
+        <div className="h-[4.5rem]"></div>
 
-          <div className="text-center">
-            <div className="border-t-2 border-slate-200 w-full mb-3"></div>
-            <p className="font-bold text-slate-900 uppercase">
-              {documentType === 'third_party'
-                ? data.clientName || 'NOME DO RECEBEDOR'
-                : data.issuerName || 'Nome do Emissor'}
-            </p>
-            <p className="text-sm text-slate-500">
-              CPF/CNPJ:{' '}
-              {documentType === 'third_party'
-                ? data.clientDocument
-                  ? maskCpfCnpj(data.clientDocument)
-                  : '___________________'
-                : data.issuerDocument
-                  ? maskCpfCnpj(data.issuerDocument)
-                  : 'N/A'}
-            </p>
-          </div>
+        <div className="w-3/5 md:w-2/5 min-w-[280px] mx-auto text-center">
+          <div className="border-t-2 border-slate-200 w-full mb-3"></div>
+          <p className="font-bold text-slate-900 uppercase">
+            {documentType === 'third_party'
+              ? data.clientName || 'NOME DO RECEBEDOR'
+              : data.issuerName || 'Nome do Emissor'}
+          </p>
+          <p className="text-sm text-slate-500">
+            CPF/CNPJ:{' '}
+            {documentType === 'third_party'
+              ? data.clientDocument
+                ? maskCpfCnpj(data.clientDocument)
+                : '___________________'
+              : data.issuerDocument
+                ? maskCpfCnpj(data.issuerDocument)
+                : 'N/A'}
+          </p>
         </div>
       </div>
     </div>
