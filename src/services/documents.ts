@@ -62,3 +62,8 @@ export const getAllDocuments = async () => {
     .order('created_at', { ascending: false })
   return { data, error }
 }
+
+export const deleteDocument = async (id: string) => {
+  const { data, error } = await supabase.from('documents').delete().eq('id', id)
+  return { data, error }
+}

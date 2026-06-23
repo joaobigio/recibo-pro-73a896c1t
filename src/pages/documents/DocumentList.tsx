@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getMyDocuments, Document } from '@/services/documents'
+import { getMyDocuments, Document, deleteDocument } from '@/services/documents'
 import { getClients, Client } from '@/services/clients'
 import { useAuth } from '@/hooks/use-auth'
 import { Input } from '@/components/ui/input'
@@ -14,9 +14,20 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
-import { Printer, Eye, Search, Download } from 'lucide-react'
+import { Printer, Eye, Search, Download, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { toast } from 'sonner'
 
 export default function DocumentList() {
   const { user } = useAuth()
@@ -29,6 +40,7 @@ export default function DocumentList() {
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [autoPrint, setAutoPrint] = useState(false)
+  const [docToDelete, setDocToDelete] = useState<Document | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -81,10 +93,22 @@ export default function DocumentList() {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
   }
 
+  const handleDelete = async () => {
+    if (!docToDelete) return
+    const { error } = await deleteDocument(docToDelete.id)
+    if (error) {
+      toast.error('Erro ao excluir documento.')
+    } else {
+      toast.success('Documento excluído com sucesso.')
+      setDocuments(documents.filter((d) => d.id !== docToDelete.id))
+    }
+    setDocToDelete(null)
+  }
+
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
-    const date = new Date(dateStr)
-    return new Intl.DateTimeFormat('pt-BR').format(date)
+    const [year, month, day] = dateStr.split('T')[0].split('-')
+    return `${day}/${month}/${year}`
   }
 
   const getTypeLabel = (type: string) => {
@@ -206,6 +230,15 @@ export default function DocumentList() {
                       >
                         <Download className="h-4 w-4" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        title="Excluir"
+                        onClick={() => setDocToDelete(doc)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -214,6 +247,27 @@ export default function DocumentList() {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={!!docToDelete} onOpenChange={(open) => !open && setDocToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Documento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O documento será permanentemente removido do seu
+              histórico.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden bg-muted/30 print:p-0 print:border-none print:shadow-none print:bg-white print:max-w-none print:w-full">
