@@ -197,16 +197,16 @@ export default function Generator() {
   }, [user])
 
   const handleSave = async () => {
-    if (!user) return
+    if (!user) return false
 
     if ((formData.description || '').length > 50) {
       toast.error('O campo "Referente a" deve ter no máximo 50 caracteres.')
-      return
+      return false
     }
 
     if ((formData.observations || '').length > 300) {
       toast.error('O campo "Observações" deve ter no máximo 300 caracteres.')
-      return
+      return false
     }
 
     setSaving(true)
@@ -238,8 +238,10 @@ export default function Generator() {
         ...prev,
         documentNumber: String(newNum).padStart(3, '0'),
       }))
+      return true
     } catch (error) {
       toast.error('Erro ao salvar o recibo.')
+      return false
     } finally {
       setSaving(false)
     }
@@ -247,6 +249,16 @@ export default function Generator() {
 
   const handlePrint = () => {
     window.print()
+  }
+
+  const handleExportPDF = async () => {
+    const success = await handleSave()
+    if (success) {
+      // Delay to ensure any state updates and toast notifications are rendered
+      setTimeout(() => {
+        window.print()
+      }, 300)
+    }
   }
 
   return (
@@ -752,9 +764,9 @@ export default function Generator() {
             <Share2 className="h-4 w-4 mr-2" />
             WhatsApp
           </Button>
-          <Button variant="default" size="sm" onClick={handlePrint}>
+          <Button variant="default" size="sm" onClick={handleExportPDF} disabled={saving}>
             <Printer className="h-4 w-4 mr-2" />
-            Imprimir / PDF
+            Exportar PDF
           </Button>
         </div>
 
