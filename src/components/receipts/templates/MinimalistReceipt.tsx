@@ -15,39 +15,42 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 max-w-3xl mx-auto text-gray-800 print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
     >
       <div>
-        <div className="flex justify-between items-start mb-8 min-h-[6rem] gap-4">
+        <div className="flex justify-between items-start mb-12 gap-4">
           <div className="flex-1 pr-4 z-10">
             {profile?.logo_url ? (
               <img
                 src={profile.logo_url}
                 alt="Logo do Emissor"
-                className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
-                style={{ imageRendering: 'high-quality' }}
+                className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left"
+                style={{ imageRendering: 'high-quality', filter: 'grayscale(100%) opacity(90%)' }}
               />
             ) : (
-              <div className="font-bold uppercase text-sm break-words pr-4 pt-2">
+              <div className="font-light uppercase text-sm tracking-widest break-words pr-4 pt-2 text-gray-400">
                 {data.issuerName || profile?.name || 'EMISSOR'}
               </div>
             )}
           </div>
-          <div className="flex-shrink-0 flex justify-end items-start pt-2 z-10">
-            <h2 className="text-2xl font-bold uppercase text-gray-900 whitespace-nowrap text-right drop-shadow-sm">
+          <div className="flex-shrink-0 flex flex-col items-end pt-2 z-10">
+            <h2 className="text-sm font-normal text-gray-400 uppercase tracking-widest whitespace-nowrap text-right mb-2">
               {documentTitle}
             </h2>
+            <div className="font-light text-5xl tracking-tighter text-gray-900 mb-1">
+              {formatCurrency(data.amount)}
+            </div>
+            <div className="text-xs text-gray-400 font-light tracking-widest mt-1">
+              Nº {receiptNumber}
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-between items-end mb-8">
-          <div className="text-sm text-gray-700 font-bold uppercase">Nº {receiptNumber}</div>
-          <div className="text-right">
-            <div className="font-light text-3xl tracking-tight text-gray-900 mb-1">
-              {formatCurrency(data.amount)}
-            </div>
+        <div className="mb-10">
+          <div className="flex flex-col gap-1 items-end">
             {data.paymentMethod && (
-              <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+              <div className="text-xs text-gray-400 uppercase tracking-widest">
+                PAGAMENTO:{' '}
                 {data.paymentMethod === 'outros' && data.paymentMethodDetails
                   ? data.paymentMethodDetails
                   : (
@@ -64,7 +67,7 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
               </div>
             )}
             {data.clientPixKey && (
-              <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+              <div className="text-xs text-gray-400 uppercase tracking-widest">
                 {data.clientPixKeyType
                   ? `PIX CLIENTE (${
                       {
@@ -86,22 +89,27 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
           data={data}
           documentType={documentType}
           documentTitle={documentTitle}
-          className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800"
+          className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-600 font-light"
         />
       </div>
 
-      <div className="mt-20 flex justify-between items-end">
+      <div className="mt-24 flex justify-between items-end">
         <div className="text-center w-3/5">
-          <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
-          <p className="font-bold uppercase">{data.issuerName || 'Nome do Emissor'}</p>
-          <p className="text-sm text-gray-600">
+          <div className="border-t border-gray-200 w-4/5 mx-auto mb-3"></div>
+          <p className="font-normal text-gray-800 uppercase tracking-wide">
+            {data.issuerName || 'Nome do Emissor'}
+          </p>
+          <p className="text-xs text-gray-400 tracking-widest mt-1">
             CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
           </p>
         </div>
 
         <div className="text-right flex flex-col items-end w-2/5">
-          <p className="mb-4 text-gray-700 font-bold uppercase">
-            Data: <span className="">{data.date ? formatDate(data.date) : '____/____/______'}</span>
+          <p className="mb-4 text-gray-400 font-light uppercase tracking-widest text-sm">
+            Data:{' '}
+            <span className="text-gray-800">
+              {data.date ? formatDate(data.date) : '____/____/______'}
+            </span>
           </p>
         </div>
       </div>

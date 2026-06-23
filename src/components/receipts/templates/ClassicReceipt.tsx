@@ -15,10 +15,10 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   return (
     <div
       id="print-area"
-      className="bg-white p-8 md:p-12 border rounded-lg shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-sans"
+      className="bg-white p-8 md:p-12 border-2 border-gray-300 rounded-sm shadow-sm max-w-3xl mx-auto text-black print:shadow-none print:border-none print:p-0 w-full min-h-[600px] print:max-h-[290mm] print:overflow-hidden flex flex-col justify-between relative font-serif"
     >
       <div>
-        <div className="flex justify-between items-start mb-8 min-h-[6rem] gap-4">
+        <div className="flex justify-between items-start mb-6 border-b-2 border-gray-300 pb-6 gap-4 min-h-[6rem]">
           <div className="flex-1 pr-4 z-10">
             {profile?.logo_url ? (
               <img
@@ -42,7 +42,7 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
 
         <div className="flex justify-between items-end mb-8">
           <div className="text-sm text-gray-700 font-bold uppercase">Nº {receiptNumber}</div>
-          <div className="border border-gray-400 px-4 py-1.5 font-bold uppercase text-xl rounded bg-white min-w-[140px] text-center shadow-sm">
+          <div className="border-2 border-gray-800 px-4 py-1.5 font-bold uppercase text-xl bg-gray-50 min-w-[140px] text-center">
             {formatCurrency(data.amount)}
           </div>
         </div>
