@@ -98,6 +98,8 @@ export default function ThirdPartyReceiptForm() {
           observations: formData.observations,
           paymentMethods: formData.payment_methods,
           type: 'third_party',
+          dischargeText:
+            'Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável quitação pelo valor recebido, para nada mais reclamar ou exigir a qualquer título, seja presente ou futuro.',
         },
       }
 

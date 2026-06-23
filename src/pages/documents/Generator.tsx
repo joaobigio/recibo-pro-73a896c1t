@@ -53,6 +53,8 @@ export default function Generator() {
     paymentMethodDetails: '',
     documentNumber: '',
     observations: '',
+    dischargeText:
+      'Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável quitação pelo valor recebido, para nada mais reclamar ou exigir a qualquer título, seja presente ou futuro.',
     items: [] as { id: string; description: string; quantity: number; unitPrice: number }[],
     discount: 0,
     surcharge: 0,

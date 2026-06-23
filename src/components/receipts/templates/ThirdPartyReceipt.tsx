@@ -129,8 +129,8 @@ export function ThirdPartyReceipt({ data, documentTitle }: ReceiptTemplateProps)
           )}
 
           <p className="text-left">
-            Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável
-            quitação pelo valor recebido.
+            {data.dischargeText ||
+              'Para maior clareza, firmo o presente recibo, conferindo plena, geral e irrevogável quitação pelo valor recebido, para nada mais reclamar ou exigir a qualquer título, seja presente ou futuro.'}
           </p>
 
           {data.observations && (
