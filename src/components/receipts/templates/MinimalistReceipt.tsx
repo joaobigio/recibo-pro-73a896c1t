@@ -2,6 +2,7 @@ import { formatCurrency, formatDate, maskCpfCnpj } from '@/lib/format'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
 import { ReceiptContent } from '../ReceiptContent'
+import { ThirdPartyContent } from '../ThirdPartyContent'
 
 export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   const { profile } = useAuth()
@@ -85,22 +86,38 @@ export function MinimalistReceipt({ data, documentTitle }: ReceiptTemplateProps)
           </div>
         </div>
 
-        <ReceiptContent
-          data={data}
-          documentType={documentType}
-          documentTitle={documentTitle}
-          className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-600 font-light"
-        />
+        {documentType === 'third_party' ? (
+          <ThirdPartyContent
+            data={data}
+            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-600 font-light"
+          />
+        ) : (
+          <ReceiptContent
+            data={data}
+            documentType={documentType}
+            documentTitle={documentTitle}
+            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-600 font-light"
+          />
+        )}
       </div>
 
       <div className="mt-24 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-200 w-4/5 mx-auto mb-3"></div>
           <p className="font-normal text-gray-800 uppercase tracking-wide">
-            {data.issuerName || 'Nome do Emissor'}
+            {documentType === 'third_party'
+              ? data.clientName || 'NOME DO RECEBEDOR'
+              : data.issuerName || 'Nome do Emissor'}
           </p>
           <p className="text-xs text-gray-400 tracking-widest mt-1">
-            CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
+            CPF/CNPJ:{' '}
+            {documentType === 'third_party'
+              ? data.clientDocument
+                ? maskCpfCnpj(data.clientDocument)
+                : '___________________'
+              : data.issuerDocument
+                ? maskCpfCnpj(data.issuerDocument)
+                : 'N/A'}
           </p>
         </div>
 

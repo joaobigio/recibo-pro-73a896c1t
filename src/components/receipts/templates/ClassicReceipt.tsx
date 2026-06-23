@@ -2,6 +2,7 @@ import { formatCurrency, formatDate, maskCpfCnpj } from '@/lib/format'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
 import { ReceiptContent } from '../ReceiptContent'
+import { ThirdPartyContent } from '../ThirdPartyContent'
 
 export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
   const { profile } = useAuth()
@@ -47,12 +48,19 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
           </div>
         </div>
 
-        <ReceiptContent
-          data={data}
-          documentType={documentType}
-          documentTitle={documentTitle}
-          className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800"
-        />
+        {documentType === 'third_party' ? (
+          <ThirdPartyContent
+            data={data}
+            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800"
+          />
+        ) : (
+          <ReceiptContent
+            data={data}
+            documentType={documentType}
+            documentTitle={documentTitle}
+            className="space-y-4 text-[1.1rem] leading-relaxed text-left text-gray-800"
+          />
+        )}
 
         {(data.paymentMethod || data.clientPixKey) && (
           <div className="mt-6 text-[1.1rem] text-gray-800 space-y-1">
@@ -99,9 +107,20 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
       <div className="mt-20 flex justify-between items-end">
         <div className="text-center w-3/5">
           <div className="border-t border-gray-800 w-4/5 mx-auto mb-2"></div>
-          <p className="font-bold uppercase">{data.issuerName || 'Nome do Emissor'}</p>
+          <p className="font-bold uppercase">
+            {documentType === 'third_party'
+              ? data.clientName || 'NOME DO RECEBEDOR'
+              : data.issuerName || 'Nome do Emissor'}
+          </p>
           <p className="text-sm text-gray-600">
-            CPF/CNPJ: {data.issuerDocument ? maskCpfCnpj(data.issuerDocument) : 'N/A'}
+            CPF/CNPJ:{' '}
+            {documentType === 'third_party'
+              ? data.clientDocument
+                ? maskCpfCnpj(data.clientDocument)
+                : '___________________'
+              : data.issuerDocument
+                ? maskCpfCnpj(data.issuerDocument)
+                : 'N/A'}
           </p>
         </div>
 

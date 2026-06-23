@@ -149,6 +149,36 @@ export default function ThirdPartyReceiptForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="space-y-3">
+          <Label>Layout do Documento</Label>
+          <div className="grid grid-cols-3 gap-2 max-w-md">
+            <Button
+              type="button"
+              variant={formData.template === 'classic' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'classic' }))}
+              size="sm"
+            >
+              Clássico
+            </Button>
+            <Button
+              type="button"
+              variant={formData.template === 'modern' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'modern' }))}
+              size="sm"
+            >
+              Moderno
+            </Button>
+            <Button
+              type="button"
+              variant={formData.template === 'minimalist' ? 'default' : 'outline'}
+              onClick={() => setFormData((p) => ({ ...p, template: 'minimalist' }))}
+              size="sm"
+            >
+              Minimalista
+            </Button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="amount">Valor *</Label>
