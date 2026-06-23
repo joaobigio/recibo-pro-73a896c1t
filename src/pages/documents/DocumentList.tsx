@@ -6,13 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
   Table,
   TableBody,
   TableCell,
@@ -20,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
-import { Printer, Eye, Search } from 'lucide-react'
+import { Printer, Eye, Search, Download } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default function DocumentList() {
@@ -30,8 +23,12 @@ export default function DocumentList() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
-  const [filterClient, setFilterClient] = useState<string>('all')
+  const [searchName, setSearchName] = useState<string>('')
   const [filterDate, setFilterDate] = useState<string>('')
+
+  const [selectedDoc, setSelectedDoc] = useState<Document | null>(null)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [autoPrint, setAutoPrint] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -47,9 +44,35 @@ export default function DocumentList() {
     setLoading(false)
   }
 
+  useEffect(() => {
+    if (isPreviewOpen && autoPrint) {
+      const timer = setTimeout(() => {
+        window.print()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [isPreviewOpen, autoPrint])
+
+  const handleOpenPreview = (doc: Document) => {
+    setSelectedDoc(doc)
+    setAutoPrint(false)
+    setIsPreviewOpen(true)
+  }
+
+  const handleDownloadPdf = (doc: Document) => {
+    setSelectedDoc(doc)
+    setAutoPrint(true)
+    setIsPreviewOpen(true)
+  }
+
   const filteredDocs = documents.filter((doc) => {
     let match = true
-    if (filterClient !== 'all' && doc.client_id !== filterClient) match = false
+    if (searchName) {
+      const clientName = doc.data?.clientName || ''
+      if (!clientName.toLowerCase().includes(searchName.toLowerCase())) {
+        match = false
+      }
+    }
     if (filterDate && doc.created_at.split('T')[0] !== filterDate) match = false
     return match
   })
@@ -90,20 +113,16 @@ export default function DocumentList() {
       <Card className="print:hidden">
         <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label>Filtrar por Cliente</Label>
-            <Select value={filterClient} onValueChange={setFilterClient}>
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os clientes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os clientes</SelectItem>
-                {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Buscar por Cliente</Label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Nome do cliente..."
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                className="pl-8"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Filtrar por Data</Label>
@@ -114,7 +133,7 @@ export default function DocumentList() {
               variant="outline"
               className="w-full"
               onClick={() => {
-                setFilterClient('all')
+                setSearchName('')
                 setFilterDate('')
               }}
             >
@@ -133,19 +152,20 @@ export default function DocumentList() {
               <TableHead>Cliente</TableHead>
               <TableHead>Referente a</TableHead>
               <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-center w-[100px]">Ações</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center w-[120px]">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   Carregando documentos...
                 </TableCell>
               </TableRow>
             ) : filteredDocs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   Nenhum documento encontrado.
                 </TableCell>
               </TableRow>
@@ -161,26 +181,32 @@ export default function DocumentList() {
                   <TableCell className="text-right font-medium">
                     {formatCurrency(doc.amount)}
                   </TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground">
+                      {doc.status === 'issued' ? 'Emitido' : doc.status}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-center">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-muted/30 print:p-0 print:border-none print:shadow-none print:bg-white print:max-w-none print:w-full">
-                        <div className="p-4 border-b bg-background flex justify-between items-center print:hidden">
-                          <h2 className="font-semibold">Visualização do Documento</h2>
-                          <Button size="sm" onClick={() => window.print()}>
-                            <Printer className="h-4 w-4 mr-2" />
-                            Imprimir / PDF
-                          </Button>
-                        </div>
-                        <div className="p-6 overflow-y-auto max-h-[80vh] print:max-h-none print:p-0 print:overflow-visible">
-                          <ReceiptPreview data={doc.data} />
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <div className="flex justify-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Visualizar"
+                        onClick={() => handleOpenPreview(doc)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        title="Baixar PDF"
+                        onClick={() => handleDownloadPdf(doc)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -188,6 +214,21 @@ export default function DocumentList() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-muted/30 print:p-0 print:border-none print:shadow-none print:bg-white print:max-w-none print:w-full">
+          <div className="p-4 border-b bg-background flex justify-between items-center print:hidden">
+            <h2 className="font-semibold">Visualização do Documento</h2>
+            <Button size="sm" onClick={() => window.print()}>
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir / PDF
+            </Button>
+          </div>
+          <div className="p-6 overflow-y-auto max-h-[80vh] print:max-h-none print:p-0 print:overflow-visible flex justify-center">
+            {selectedDoc && <ReceiptPreview data={selectedDoc.data} />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -61,7 +61,8 @@ const App = () => (
               <Route path="/clientes" element={<Clients />} />
               <Route path="/clientes/cadastrar" element={<ClientForm />} />
               <Route path="/clientes/:id/editar" element={<ClientForm />} />
-              <Route path="/documentos" element={<DocumentList />} />
+              <Route path="/historico" element={<DocumentList />} />
+              <Route path="/documentos" element={<Navigate to="/historico" replace />} />
               <Route path="/recibos-terceiros/cadastrar" element={<ThirdPartyReceiptForm />} />
               <Route path="/produtos" element={<Products />} />
               <Route path="/produtos/cadastrar" element={<ProductForm />} />

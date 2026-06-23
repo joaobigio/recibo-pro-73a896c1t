@@ -36,7 +36,7 @@ export default function Layout() {
 
   const navItems = [
     { name: 'Início', path: '/', icon: Home },
-    { name: 'Documentos', path: '/documentos', icon: FileText },
+    { name: 'Histórico', path: '/historico', icon: FileText },
     { name: 'Gerar Recibo', path: '/gerador', icon: PlusCircle, primary: true },
     { name: 'Clientes', path: '/clientes', icon: Users },
     { name: 'Produtos', path: '/produtos', icon: Package, hiddenMobile: true },

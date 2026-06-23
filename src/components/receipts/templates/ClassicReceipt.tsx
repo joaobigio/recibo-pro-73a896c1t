@@ -1,12 +1,25 @@
 import { formatCurrency, formatDate, maskCpfCnpj } from '@/lib/format'
 import { ReceiptTemplateProps } from '../types'
 import { useAuth } from '@/hooks/use-auth'
+import { useState, useEffect } from 'react'
+import { getProfile } from '@/services/profiles'
 import { ReceiptContent } from '../ReceiptContent'
 import { ThirdPartyContent } from '../ThirdPartyContent'
 
 export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
+  const [localProfile, setLocalProfile] = useState<any>(profile)
   const documentType = data.type || 'receipt'
+
+  useEffect(() => {
+    if (profile) {
+      setLocalProfile(profile)
+    } else if (user) {
+      getProfile(user.id).then(({ data: p }) => {
+        if (p) setLocalProfile(p)
+      })
+    }
+  }, [profile, user])
 
   const dateObj = data.date ? new Date(`${data.date}T12:00:00`) : new Date()
   const receiptNumber = data.id
@@ -21,16 +34,16 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
       <div>
         <div className="flex justify-between items-start mb-6 border-b-2 border-gray-300 pb-6 gap-4 min-h-[6rem]">
           <div className="flex-1 pr-4 z-10">
-            {profile?.logo_url ? (
+            {localProfile?.logo_url ? (
               <img
-                src={profile.logo_url}
+                src={localProfile.logo_url}
                 alt="Logo do Emissor"
                 className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
                 style={{ imageRendering: 'high-quality' }}
               />
             ) : (
               <div className="font-bold uppercase text-sm break-words pr-4 pt-2">
-                {data.issuerName || profile?.name || 'EMISSOR'}
+                {data.issuerName || localProfile?.name || 'EMISSOR'}
               </div>
             )}
           </div>
