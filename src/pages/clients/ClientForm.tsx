@@ -121,13 +121,25 @@ export default function ClientForm() {
     try {
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession()
+
+      if (sessionError) {
+        throw new Error('Erro de conexão com o banco de dados.')
+      }
+
       const currentUser = session?.user || user
 
       if (!currentUser) {
         toast.error('Sessão expirada. Por favor, faça login novamente.')
         setLoading(false)
         navigate('/login')
+        return
+      }
+
+      if (!formData.name) {
+        toast.error('O nome do cliente é obrigatório.')
+        setLoading(false)
         return
       }
 
@@ -152,7 +164,27 @@ export default function ClientForm() {
           if (error.code === '23505') {
             throw new Error('Já existe um cliente com este documento ou e-mail.')
           }
-          throw error
+
+          if (
+            error.message?.toLowerCase().includes('permission denied') ||
+            error.message?.toLowerCase().includes('violates row-level security') ||
+            error.code === '42501' ||
+            error.code === 'PGRST301'
+          ) {
+            console.log('Attempting RPC fallback for client creation')
+            const { error: rpcError } = await supabase.rpc('create_client', {
+              client_data: clientData,
+            })
+
+            if (rpcError) {
+              if (rpcError.code === '23505') {
+                throw new Error('Já existe um cliente com este documento ou e-mail.')
+              }
+              throw rpcError
+            }
+          } else {
+            throw error
+          }
         }
         toast.success('Cliente cadastrado com sucesso!')
       }
@@ -160,10 +192,17 @@ export default function ClientForm() {
     } catch (error: any) {
       console.error(error)
       if (
-        error.message?.includes('permission denied') ||
-        error.message?.includes('violates row-level security')
+        error.message?.toLowerCase().includes('permission denied') ||
+        error.message?.toLowerCase().includes('violates row-level security') ||
+        error.code === '42501' ||
+        error.code === 'PGRST301'
       ) {
-        toast.error('Erro de permissão: Você não tem acesso para salvar este cliente.')
+        toast.error('Erro de permissão: Verifique se sua sessão está ativa ou contate o suporte.')
+      } else if (
+        error.message === 'Erro de conexão com o banco de dados.' ||
+        error.message?.includes('Failed to fetch')
+      ) {
+        toast.error('Erro de conexão com o banco de dados.')
       } else {
         toast.error(error.message || 'Erro ao salvar cliente')
       }
