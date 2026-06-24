@@ -102,7 +102,15 @@ export default function Users() {
       }
     } catch (error: any) {
       console.error(error)
-      toast.error(error.message || 'Erro ao criar usuário')
+      const isEmailError =
+        error.message?.includes('Email') ||
+        error.message?.includes('email') ||
+        error.message?.includes('Resend')
+      toast.error(
+        isEmailError
+          ? 'Erro ao enviar convite. Por favor, tente novamente mais tarde.'
+          : error.message || 'Erro ao criar usuário',
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -239,7 +247,8 @@ export default function Users() {
                               toast.promise(promise, {
                                 loading: 'Enviando convite...',
                                 success: 'Convite reenviado com sucesso!',
-                                error: 'Erro ao enviar convite',
+                                error:
+                                  'Erro ao enviar convite. Por favor, tente novamente mais tarde.',
                               })
                             }
                           }}

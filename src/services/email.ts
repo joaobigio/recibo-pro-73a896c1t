@@ -2,7 +2,11 @@ import { supabase } from '@/lib/supabase/client'
 
 export const sendWelcomeEmail = async (params: { name: string; email: string }) => {
   const { data, error } = await supabase.functions.invoke('send-welcome-email', {
-    body: { ...params, appUrl: 'https://recibo-pro-0351d.goskip.app' },
+    body: { ...params, appUrl: window.location.origin },
   })
-  return { data, error }
+
+  if (error) throw error
+  if (data?.error) throw new Error(data.error)
+
+  return { data, error: null }
 }
