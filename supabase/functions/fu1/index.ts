@@ -5,7 +5,7 @@ import { createLocalJWKSet, jwtVerify } from 'npm:jose@5.9.6'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 }
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
@@ -37,41 +37,28 @@ function jsonResponse(body: unknown, status = 200) {
   })
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
-
-  if (req.method !== 'POST') {
-    return jsonResponse(
-      {
-        ok: false,
-        error: {
-          code: 'METHOD_NOT_ALLOWED',
-          message: 'Use POST for this endpoint.',
-        },
-      },
-      405,
-    )
-  }
-
+async function getUserIdFromAuthHeader(
+  req: Request,
+): Promise<{ userId?: string; error?: Response }> {
   const authHeader = req.headers.get('Authorization')
+
   if (!authHeader?.startsWith('Bearer ')) {
-    return jsonResponse(
-      {
-        ok: false,
-        error: {
-          code: 'UNAUTHORIZED',
-          message: 'Missing or invalid Authorization header.',
+    return {
+      error: jsonResponse(
+        {
+          ok: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Missing or invalid Authorization header.',
+          },
         },
-      },
-      401,
-    )
+        401,
+      ),
+    }
   }
 
   const token = authHeader.replace('Bearer ', '')
 
-  let sub: string
   try {
     const { payload } = await jwtVerify(token, JWKS, {
       algorithms: ['ES256', 'RS256', 'EdDSA'],
@@ -79,30 +66,85 @@ Deno.serve(async (req: Request) => {
     })
 
     if (!payload.sub) {
-      return jsonResponse(
+      return {
+        error: jsonResponse(
+          {
+            ok: false,
+            error: {
+              code: 'UNAUTHORIZED',
+              message: 'Token does not include user id (sub).',
+            },
+          },
+          401,
+        ),
+      }
+    }
+
+    return { userId: payload.sub }
+  } catch {
+    return {
+      error: jsonResponse(
         {
           ok: false,
           error: {
             code: 'UNAUTHORIZED',
-            message: 'Token does not include user id (sub).',
+            message: 'Invalid or expired token.',
           },
         },
         401,
-      )
+      ),
     }
+  }
+}
 
-    sub = payload.sub
-  } catch {
+Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return jsonResponse(
       {
         ok: false,
         error: {
-          code: 'UNAUTHORIZED',
-          message: 'Invalid or expired token.',
+          code: 'METHOD_NOT_ALLOWED',
+          message: 'Use GET or POST for this endpoint.',
         },
       },
-      401,
+      405,
     )
+  }
+
+  const auth = await getUserIdFromAuthHeader(req)
+  if (auth.error) return auth.error
+  const userId = auth.userId as string
+
+  if (req.method === 'GET') {
+    const url = new URL(req.url)
+    const limitParam = Number(url.searchParams.get('limit') ?? '50')
+    const limit = Number.isNaN(limitParam) ? 50 : Math.min(Math.max(limitParam, 1), 200)
+
+    const { data, error } = await admin
+      .from('tasks')
+      .select('id, user_id, title, is_done, created_at, updated_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      return jsonResponse(
+        {
+          ok: false,
+          error: {
+            code: 'DB_READ_FAILED',
+            message: error.message,
+          },
+        },
+        500,
+      )
+    }
+
+    return jsonResponse({ ok: true, data })
   }
 
   let rawBody: unknown
@@ -140,7 +182,7 @@ Deno.serve(async (req: Request) => {
 
   const { data, error } = await admin
     .from('tasks')
-    .insert({ user_id: sub, title, ...(is_done !== undefined ? { is_done } : {}) })
+    .insert({ user_id: userId, title, ...(is_done !== undefined ? { is_done } : {}) })
     .select('id, user_id, title, is_done, created_at')
     .single()
 
@@ -157,8 +199,5 @@ Deno.serve(async (req: Request) => {
     )
   }
 
-  return jsonResponse({
-    ok: true,
-    data,
-  })
+  return jsonResponse({ ok: true, data })
 })

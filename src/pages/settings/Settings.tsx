@@ -23,9 +23,27 @@ export default function Settings() {
 
   useEffect(() => {
     if (user) {
-      getProfile(user.id).then(({ data }) => {
-        setProfile(data)
-        if (data) {
+      getProfile(user.id).then(async ({ data }) => {
+        if (!data) {
+          const newProfile = {
+            id: user.id,
+            email: user.email || '',
+            name: user.user_metadata?.name || '',
+          }
+          const { data: createdProfile, error } = await supabase
+            .from('profiles')
+            .insert([newProfile])
+            .select()
+            .single()
+          if (!error && createdProfile) {
+            setProfile(createdProfile)
+            setDoc('')
+            setPhone('')
+          } else {
+            setProfile(newProfile)
+          }
+        } else {
+          setProfile(data)
           setDoc(maskCpfCnpj(data.document || ''))
           setPhone(maskPhone(data.phone || ''))
         }
