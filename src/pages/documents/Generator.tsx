@@ -31,6 +31,7 @@ export default function Generator() {
   const [products, setProducts] = useState<Product[]>([])
   const [saving, setSaving] = useState(false)
   const [nextDocNumber, setNextDocNumber] = useState<number>(1)
+  const [dataLoading, setDataLoading] = useState(true)
 
   const [formData, setFormData] = useState<any>({
     type: initialType,
@@ -173,52 +174,66 @@ export default function Generator() {
   }, [searchParams])
 
   useEffect(() => {
-    if (user) {
-      getProfile(user.id).then(({ data, error }) => {
-        if (error) {
-          toast.error('Erro ao carregar perfil')
-        } else if (data) {
-          setProfile(data)
+    if (!user) return
+
+    const loadData = async () => {
+      setDataLoading(true)
+      try {
+        let profileData = null
+        let retries = 3
+        while (retries > 0) {
+          const { data, error } = await getProfile(user.id)
+          if (data && !error) {
+            profileData = data
+            break
+          }
+          retries--
+          if (retries > 0) await new Promise((r) => setTimeout(r, 1000))
+        }
+
+        if (profileData) {
+          setProfile(profileData)
           setFormData((prev: any) => ({
             ...prev,
-            issuerName: data.name || '',
-            issuerDocument: data.document || '',
-            issuerPixKey: data.pix_key || '',
-            logo_url: data.logo_url || '',
+            issuerName: profileData.name || '',
+            issuerDocument: profileData.document || '',
+            issuerPixKey: profileData.pix_key || '',
+            logo_url: profileData.logo_url || '',
           }))
         } else {
           setFormData((prev: any) => ({
             ...prev,
             issuerName: user.email || '',
           }))
+          console.error('Falha ao carregar perfil após tentativas')
         }
-      })
-      getClients(user.id).then(({ data, error }) => {
-        if (error) {
-          toast.error('Erro ao carregar clientes')
-        } else if (data) {
-          setClients(data)
-        }
-      })
-      getProducts(user.id).then(({ data, error }) => {
-        if (error) {
-          toast.error('Erro ao carregar produtos')
-        } else if (data) {
-          setProducts(data)
-        }
-      })
-      getNextDocumentNumber(user.id)
-        .then((num) => {
+
+        const [{ data: clientsData }, { data: productsData }] = await Promise.all([
+          getClients(user.id).catch(() => ({ data: [] })),
+          getProducts(user.id).catch(() => ({ data: [] })),
+        ])
+
+        if (clientsData) setClients(clientsData)
+        if (productsData) setProducts(productsData)
+
+        try {
+          const num = await getNextDocumentNumber(user.id)
           setNextDocNumber(num)
           setFormData((prev: any) => ({
             ...prev,
             documentNumber: String(num).padStart(3, '0'),
           }))
-        })
-        .catch(() => {
-          toast.error('Erro ao carregar número do próximo documento')
-        })
+        } catch (err) {
+          console.error('Falha ao carregar próximo número', err)
+        }
+      } catch (err) {
+        console.error('Erro geral ao carregar dados', err)
+      } finally {
+        setDataLoading(false)
+      }
     }
+
+    loadData()
   }, [user])
 
   const handleSave = async () => {
@@ -248,6 +263,7 @@ export default function Generator() {
         amount: formData.amount,
         client_id: foundClient ? foundClient.id : undefined,
         document_number: nextDocNumber,
+        status: 'completed',
         data: {
           ...formData,
           documentNumber: String(nextDocNumber).padStart(3, '0'),
@@ -288,6 +304,34 @@ export default function Generator() {
         window.print()
       }, 300)
     }
+  }
+
+  if (dataLoading) {
+    return (
+      <div className="h-full flex flex-col xl:flex-row gap-6 animate-fade-in p-4 md:p-6">
+        <div className="w-full xl:w-1/3 flex flex-col gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Gerar Documento</h1>
+            <p className="text-muted-foreground text-sm">Carregando dados da sua marca...</p>
+          </div>
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-3">
+                <div className="h-5 w-1/3 bg-muted rounded"></div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="h-8 w-full bg-muted rounded"></div>
+                <div className="h-8 w-full bg-muted rounded"></div>
+                <div className="h-8 w-2/3 bg-muted rounded"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="w-full xl:w-2/3 flex flex-col bg-muted/30 p-4 md:p-8 rounded-lg animate-pulse">
+          <div className="w-full h-full min-h-[600px] bg-muted rounded-lg"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
