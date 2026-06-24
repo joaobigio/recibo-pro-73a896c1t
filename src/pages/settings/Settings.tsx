@@ -40,6 +40,12 @@ export default function Settings() {
             setDoc('')
             setPhone('')
           } else {
+            console.error('Failed to create initial profile:', error)
+            toast({
+              title: 'Aviso',
+              description: 'Não foi possível provisionar o perfil inicial. Verifique sua conexão.',
+              variant: 'destructive',
+            })
             setProfile(newProfile)
           }
         } else {
