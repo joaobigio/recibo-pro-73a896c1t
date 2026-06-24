@@ -10,6 +10,10 @@ export interface Document {
   data: any
   created_at: string
   document_number?: number
+  profiles?: {
+    name: string | null
+    email: string | null
+  } | null
 }
 
 export const createDocument = async (userId: string, doc: Partial<Document>) => {

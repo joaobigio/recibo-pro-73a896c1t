@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getMyDocuments, Document, deleteDocument } from '@/services/documents'
+import { getAllDocuments, Document, deleteDocument } from '@/services/documents'
 import { getClients, Client } from '@/services/clients'
 import { useAuth } from '@/hooks/use-auth'
 import { Input } from '@/components/ui/input'
@@ -55,8 +55,8 @@ export default function DocumentList() {
 
   const loadData = async () => {
     setLoading(true)
-    const [docsRes, clientsRes] = await Promise.all([getMyDocuments(user!.id), getClients()])
-    if (docsRes.data) setDocuments(docsRes.data)
+    const [docsRes, clientsRes] = await Promise.all([getAllDocuments(), getClients()])
+    if (docsRes.data) setDocuments(docsRes.data as any)
     if (clientsRes.data) setClients(clientsRes.data)
     setLoading(false)
   }
@@ -249,6 +249,7 @@ export default function DocumentList() {
               <TableHead>Referente a</TableHead>
               <TableHead className="text-right">Valor</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Criado por</TableHead>
               <TableHead className="text-center w-[120px]">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -288,6 +289,16 @@ export default function DocumentList() {
                     <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground">
                       {doc.status === 'issued' ? 'Emitido' : doc.status}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">
+                        {doc.profiles?.name || 'Desconhecido'}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {doc.profiles?.email || ''}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex justify-center gap-1">

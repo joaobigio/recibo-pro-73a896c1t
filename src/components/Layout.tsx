@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export default function Layout() {
-  const { session, loading, signOut } = useAuth()
+  const { session, loading, signOut, isAdmin } = useAuth()
   const location = useLocation()
 
   if (loading) {
@@ -41,6 +41,9 @@ export default function Layout() {
     { name: 'Clientes', path: '/clientes', icon: Users },
     { name: 'Produtos', path: '/produtos', icon: Package, hiddenMobile: true },
     { name: 'Agendamentos', path: '/agendamentos', icon: Calendar, hiddenMobile: true },
+    ...(isAdmin
+      ? [{ name: 'Equipe', path: '/configuracoes/usuarios', icon: Users, hiddenMobile: true }]
+      : []),
     { name: 'Config', path: '/configuracoes', icon: Settings },
   ]
 

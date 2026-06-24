@@ -19,6 +19,7 @@ import RecurringList from './pages/recurring/RecurringList'
 import RecurringForm from './pages/recurring/RecurringForm'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Settings from './pages/settings/Settings'
+import Users from './pages/settings/Users'
 import NotFound from './pages/NotFound'
 import ComingSoon from './pages/ComingSoon'
 
@@ -75,6 +76,7 @@ const App = () => (
               <Route path="/relatorios" element={<ComingSoon />} />
               <Route path="/ajuda" element={<ComingSoon />} />
               <Route path="/configuracoes" element={<Settings />} />
+              <Route path="/configuracoes/usuarios" element={<Users />} />
               <Route path="/admin" element={<AdminDashboard />} />
             </Route>
           </Route>
