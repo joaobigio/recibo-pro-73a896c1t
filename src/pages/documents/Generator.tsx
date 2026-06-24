@@ -15,6 +15,7 @@ import { ReceiptPreview } from '@/components/receipts/ReceiptPreview'
 import { useSearchParams } from 'react-router-dom'
 import { getProfile, Profile } from '@/services/profiles'
 import { getClients, Client } from '@/services/clients'
+import { getProducts, Product } from '@/services/products'
 import { createDocument, getNextDocumentNumber } from '@/services/documents'
 import { useAuth } from '@/hooks/use-auth'
 import { maskCpfCnpj } from '@/lib/format'
@@ -27,6 +28,7 @@ export default function Generator() {
   const initialType = searchParams.get('type') || 'receipt'
   const [profile, setProfile] = useState<Profile | null>(null)
   const [clients, setClients] = useState<Client[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [saving, setSaving] = useState(false)
   const [nextDocNumber, setNextDocNumber] = useState<number>(1)
 
@@ -185,6 +187,9 @@ export default function Generator() {
       })
       getClients().then(({ data }) => {
         if (data) setClients(data)
+      })
+      getProducts().then(({ data }) => {
+        if (data) setProducts(data)
       })
       getNextDocumentNumber(user.id).then((num) => {
         setNextDocNumber(num)
@@ -599,11 +604,54 @@ export default function Generator() {
                   >
                     <div className="col-span-12 md:col-span-5 space-y-1">
                       <Label className="text-xs">Descrição</Label>
-                      <Input
-                        value={item.description}
-                        onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                        placeholder="Nome do item/serviço"
-                      />
+                      <div className="relative group">
+                        <Input
+                          value={item.description}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            updateItem(item.id, 'description', val)
+                            const found = products.find(
+                              (p) => p.name.toLowerCase() === val.toLowerCase(),
+                            )
+                            if (found) {
+                              updateItem(item.id, 'unitPrice', found.price)
+                            }
+                          }}
+                          placeholder="Nome do item/serviço"
+                          className="peer"
+                        />
+                        {item.description &&
+                          products.filter(
+                            (p) =>
+                              p.name.toLowerCase().includes(item.description.toLowerCase()) &&
+                              p.name.toLowerCase() !== item.description.toLowerCase(),
+                          ).length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg opacity-0 invisible peer-focus:opacity-100 peer-focus:visible hover:opacity-100 hover:visible transition-all max-h-48 overflow-y-auto">
+                              {products
+                                .filter(
+                                  (p) =>
+                                    p.name.toLowerCase().includes(item.description.toLowerCase()) &&
+                                    p.name.toLowerCase() !== item.description.toLowerCase(),
+                                )
+                                .map((product) => (
+                                  <div
+                                    key={product.id}
+                                    className="px-3 py-2 cursor-pointer hover:bg-muted text-sm border-b last:border-0"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault()
+                                      updateItem(item.id, 'description', product.name)
+                                      updateItem(item.id, 'unitPrice', product.price)
+                                    }}
+                                  >
+                                    <p className="font-medium">{product.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      R$ {product.price.toFixed(2)}
+                                    </p>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                      </div>
                     </div>
                     <div className="col-span-4 md:col-span-2 space-y-1">
                       <Label className="text-xs">Qtd</Label>
