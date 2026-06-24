@@ -34,7 +34,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Loader2, Plus, Shield, ShieldOff, Trash2, Edit } from 'lucide-react'
+import { Loader2, Plus, Shield, ShieldOff, Trash2, Edit, Mail } from 'lucide-react'
+import { sendWelcomeEmail } from '@/services/email'
 import { toast } from 'sonner'
 
 export default function Users() {
@@ -92,7 +93,9 @@ export default function Users() {
           is_admin: formData.is_admin,
         })
 
-        toast.success('Usuário criado com sucesso!')
+        await sendWelcomeEmail({ name: formData.name, email: formData.email })
+
+        toast.success('Usuário criado e convite enviado!')
         setIsAddOpen(false)
         setFormData({ name: '', email: '', password: '', is_admin: false })
         loadUsers()
@@ -180,6 +183,7 @@ export default function Users() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Perfil</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-center w-[120px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -213,8 +217,35 @@ export default function Users() {
                         </span>
                       )}
                     </TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center gap-1 text-xs">
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        {u.id === currentUser?.id ? 'Online' : 'Convite Enviado'}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          title="Reenviar Convite"
+                          onClick={async () => {
+                            if (u.email) {
+                              const promise = sendWelcomeEmail({
+                                name: u.name || '',
+                                email: u.email,
+                              })
+                              toast.promise(promise, {
+                                loading: 'Enviando convite...',
+                                success: 'Convite reenviado com sucesso!',
+                                error: 'Erro ao enviar convite',
+                              })
+                            }
+                          }}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"

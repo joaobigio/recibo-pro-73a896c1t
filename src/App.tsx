@@ -18,6 +18,7 @@ import ProductForm from './pages/products/ProductForm'
 import RecurringList from './pages/recurring/RecurringList'
 import RecurringForm from './pages/recurring/RecurringForm'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import Dashboard from './pages/dashboard/Dashboard'
 import Settings from './pages/settings/Settings'
 import Users from './pages/settings/Users'
 import NotFound from './pages/NotFound'
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="/configuracoes" element={<Settings />} />
               <Route path="/configuracoes/usuarios" element={<Users />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Route>
 
