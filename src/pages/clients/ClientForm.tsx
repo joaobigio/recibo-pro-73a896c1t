@@ -125,8 +125,9 @@ export default function ClientForm() {
       const currentUser = session?.user || user
 
       if (!currentUser) {
-        toast.error('Usuário não autenticado.')
+        toast.error('Sessão expirada. Por favor, faça login novamente.')
         setLoading(false)
+        navigate('/login')
         return
       }
 
@@ -158,7 +159,14 @@ export default function ClientForm() {
       navigate('/clientes')
     } catch (error: any) {
       console.error(error)
-      toast.error(error.message || 'Erro ao salvar cliente')
+      if (
+        error.message?.includes('permission denied') ||
+        error.message?.includes('violates row-level security')
+      ) {
+        toast.error('Erro de permissão: Você não tem acesso para salvar este cliente.')
+      } else {
+        toast.error(error.message || 'Erro ao salvar cliente')
+      }
     } finally {
       setLoading(false)
     }
