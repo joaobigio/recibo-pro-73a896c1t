@@ -98,20 +98,25 @@ export default function Users() {
           is_admin: formData.is_admin,
         })
 
-        await sendWelcomeEmail({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        })
+        try {
+          await sendWelcomeEmail({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          })
+          toast.success('Usuário criado com sucesso e convite enviado!')
+        } catch (emailError: any) {
+          console.error('Email error:', emailError)
+          toast.error(emailError.message || 'Usuário criado, mas houve erro ao enviar o convite.')
+        }
 
-        toast.success('Usuário criado com sucesso e convite enviado!')
         setIsAddOpen(false)
         setFormData({ name: '', email: '', password: '', is_admin: false })
         loadUsers()
       }
     } catch (error: any) {
       console.error(error)
-      toast.error(error.message || 'Erro ao criar usuário ou enviar convite.')
+      toast.error(error.message || 'Erro ao criar usuário.')
     } finally {
       setIsSubmitting(false)
     }
