@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { getProfile, updateProfile } from '@/services/profiles'
 import { supabase } from '@/lib/supabase/client'
@@ -11,7 +11,7 @@ import { Upload, Loader2, Image as ImageIcon } from 'lucide-react'
 import { maskCpfCnpj, maskPhone } from '@/lib/format'
 
 export default function Settings() {
-  const { user, refreshProfile } = useAuth()
+  const { user, session, refreshProfile } = useAuth()
   const { toast } = useToast()
 
   const [loading, setLoading] = useState(false)
@@ -21,12 +21,14 @@ export default function Settings() {
   const [doc, setDoc] = useState('')
   const [phone, setPhone] = useState('')
 
+  const retryCountRef = useRef(0)
+
   useEffect(() => {
-    if (!user) return
+    if (!user || !session) return
 
     let isMounted = true
-    let retryCount = 0
     const maxRetries = 3
+    retryCountRef.current = 0
 
     const fetchProfile = async () => {
       try {
@@ -37,18 +39,13 @@ export default function Settings() {
         }
 
         if (!data) {
-          if (retryCount < maxRetries) {
-            retryCount++
-            setTimeout(fetchProfile, 1000)
-            return
-          }
-
           const newProfile = {
             id: user.id,
             user_id: user.id,
             email: user.email || '',
             name: user.user_metadata?.name || '',
           }
+
           const { data: createdProfile, error: insertError } = await supabase
             .from('profiles')
             .upsert([newProfile], { onConflict: 'id' })
@@ -62,14 +59,7 @@ export default function Settings() {
             setDoc(maskCpfCnpj(createdProfile.document || ''))
             setPhone(maskPhone(createdProfile.phone || ''))
           } else {
-            console.error('Failed to provision/fetch profile:', insertError)
-            toast({
-              title: 'Aviso',
-              description:
-                'Ocorreu um erro ao carregar os dados completos. Tente recarregar a página ou verifique sua conexão.',
-              variant: 'destructive',
-            })
-            setProfile(newProfile)
+            throw insertError || new Error('Failed to create profile')
           }
         } else {
           if (!isMounted) return
@@ -79,8 +69,9 @@ export default function Settings() {
         }
       } catch (err) {
         if (!isMounted) return
-        if (retryCount < maxRetries) {
-          retryCount++
+
+        if (retryCountRef.current < maxRetries) {
+          retryCountRef.current++
           setTimeout(fetchProfile, 1000)
         } else {
           console.error('Error fetching profile:', err)
@@ -105,7 +96,7 @@ export default function Settings() {
     return () => {
       isMounted = false
     }
-  }, [user])
+  }, [user, session])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0 || !user) return
