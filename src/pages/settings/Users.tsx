@@ -64,8 +64,13 @@ export default function Users() {
   }
 
   const handleAddUser = async () => {
-    if (!formData.email || !formData.password || !formData.name) {
+    if (!formData.name || !formData.email || !formData.password) {
       toast.error('Preencha todos os campos obrigatórios')
+      return
+    }
+
+    if (formData.password.length < 8) {
+      toast.error('A senha deve ter no mínimo 8 caracteres')
       return
     }
 
@@ -99,7 +104,7 @@ export default function Users() {
           password: formData.password,
         })
 
-        toast.success('Usuário criado e convite enviado!')
+        toast.success('Usuário criado com sucesso e convite enviado!')
         setIsAddOpen(false)
         setFormData({ name: '', email: '', password: '', is_admin: false })
         loadUsers()
@@ -310,7 +315,7 @@ export default function Users() {
               <Label>Senha Temporária</Label>
               <Input
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
