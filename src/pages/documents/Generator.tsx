@@ -174,8 +174,10 @@ export default function Generator() {
 
   useEffect(() => {
     if (user) {
-      getProfile(user.id).then(({ data }) => {
-        if (data) {
+      getProfile(user.id).then(({ data, error }) => {
+        if (error) {
+          toast.error('Erro ao carregar perfil')
+        } else if (data) {
           setProfile(data)
           setFormData((prev: any) => ({
             ...prev,
@@ -186,19 +188,31 @@ export default function Generator() {
           }))
         }
       })
-      getClients().then(({ data }) => {
-        if (data) setClients(data)
+      getClients().then(({ data, error }) => {
+        if (error) {
+          toast.error('Erro ao carregar clientes')
+        } else if (data) {
+          setClients(data)
+        }
       })
-      getProducts().then(({ data }) => {
-        if (data) setProducts(data)
+      getProducts().then(({ data, error }) => {
+        if (error) {
+          toast.error('Erro ao carregar produtos')
+        } else if (data) {
+          setProducts(data)
+        }
       })
-      getNextDocumentNumber(user.id).then((num) => {
-        setNextDocNumber(num)
-        setFormData((prev: any) => ({
-          ...prev,
-          documentNumber: String(num).padStart(3, '0'),
-        }))
-      })
+      getNextDocumentNumber(user.id)
+        .then((num) => {
+          setNextDocNumber(num)
+          setFormData((prev: any) => ({
+            ...prev,
+            documentNumber: String(num).padStart(3, '0'),
+          }))
+        })
+        .catch(() => {
+          toast.error('Erro ao carregar número do próximo documento')
+        })
     }
   }, [user])
 

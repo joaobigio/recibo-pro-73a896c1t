@@ -45,35 +45,46 @@ export default function ClientForm() {
   })
 
   useEffect(() => {
-    if (id) {
+    if (id && user) {
       loadClient()
     }
-  }, [id])
+  }, [id, user])
 
   const loadClient = async () => {
+    if (!user) return
     setLoading(true)
-    const { data } = await getClients()
-    const client = data?.find((c) => c.id === id)
-    if (client) {
-      setFormData({
-        name: client.name || '',
-        document: client.document || '',
-        email: client.email || '',
-        phone: client.phone || '',
-        pix_key_type: client.pix_key_type || '',
-        pix_key: client.pix_key || '',
-        cep: client.cep || '',
-        street: client.street || '',
-        number: client.number || '',
-        complement: client.complement || '',
-        neighborhood: client.neighborhood || '',
-        city: client.city || '',
-        state: client.state || '',
-      })
-      setNoDocument(!client.document)
-      if (client.street) setShowAddressFields(true)
+    try {
+      const { data, error } = await getClients()
+      if (error) throw error
+      const client = data?.find((c) => c.id === id)
+      if (client) {
+        setFormData({
+          name: client.name || '',
+          document: client.document || '',
+          email: client.email || '',
+          phone: client.phone || '',
+          pix_key_type: client.pix_key_type || '',
+          pix_key: client.pix_key || '',
+          cep: client.cep || '',
+          street: client.street || '',
+          number: client.number || '',
+          complement: client.complement || '',
+          neighborhood: client.neighborhood || '',
+          city: client.city || '',
+          state: client.state || '',
+        })
+        setNoDocument(!client.document)
+        if (client.street) setShowAddressFields(true)
+      } else {
+        toast.error('Cliente não encontrado')
+        navigate('/clientes')
+      }
+    } catch (error) {
+      toast.error('Erro ao carregar cliente')
+      navigate('/clientes')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleCepSearch = async () => {
