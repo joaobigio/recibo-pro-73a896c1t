@@ -1,9 +1,8 @@
 {
   "_versions": {
-    "send-welcome-email": 7,
-    "hello-world": 3,
-    "tasks-api": 4,
-    "fu1": 5,
-    "admin-create-user": 2
+    "send-welcome-email": 6,
+    "hello-world": 2,
+    "tasks-api": 3,
+    "fu1": 4
   }
 }

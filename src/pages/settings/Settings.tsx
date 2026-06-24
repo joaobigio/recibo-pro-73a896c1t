@@ -16,6 +16,7 @@ export default function Settings() {
 
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState<any>(null)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
 
   const [doc, setDoc] = useState('')
@@ -27,7 +28,7 @@ export default function Settings() {
     if (!user || !session) return
 
     let isMounted = true
-    const maxRetries = 3
+    const maxRetries = 2
     retryCountRef.current = 0
 
     const fetchProfile = async () => {
@@ -58,6 +59,7 @@ export default function Settings() {
             setProfile(createdProfile)
             setDoc(maskCpfCnpj(createdProfile.document || ''))
             setPhone(maskPhone(createdProfile.phone || ''))
+            setInitialLoading(false)
           } else {
             throw insertError || new Error('Failed to create profile')
           }
@@ -66,13 +68,14 @@ export default function Settings() {
           setProfile(data)
           setDoc(maskCpfCnpj(data.document || ''))
           setPhone(maskPhone(data.phone || ''))
+          setInitialLoading(false)
         }
       } catch (err) {
         if (!isMounted) return
 
         if (retryCountRef.current < maxRetries) {
           retryCountRef.current++
-          setTimeout(fetchProfile, 1000)
+          setTimeout(fetchProfile, 500)
         } else {
           console.error('Error fetching profile:', err)
           toast({
@@ -87,6 +90,7 @@ export default function Settings() {
             email: user.email || '',
             name: user.user_metadata?.name || '',
           })
+          setInitialLoading(false)
         }
       }
     }
@@ -184,12 +188,17 @@ export default function Settings() {
     }
   }
 
-  if (!profile)
+  if (initialLoading)
     return (
-      <div className="p-8 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="p-8 flex items-center justify-center min-h-[50vh]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground animate-pulse text-sm">Carregando perfil...</p>
+        </div>
       </div>
     )
+
+  if (!profile) return null
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto animate-fade-in">
