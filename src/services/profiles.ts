@@ -9,6 +9,7 @@ export interface Profile {
   logo_url?: string | null
   is_admin?: boolean
   email?: string
+  user_id?: string | null
 }
 
 export const getProfile = async (userId: string) => {

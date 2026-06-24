@@ -23,24 +23,29 @@ export default function Settings() {
 
   useEffect(() => {
     if (user) {
-      getProfile(user.id).then(async ({ data }) => {
+      getProfile(user.id).then(async ({ data, error }) => {
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching profile:', error)
+        }
+
         if (!data) {
           const newProfile = {
             id: user.id,
+            user_id: user.id,
             email: user.email || '',
             name: user.user_metadata?.name || '',
           }
-          const { data: createdProfile, error } = await supabase
+          const { data: createdProfile, error: insertError } = await supabase
             .from('profiles')
             .insert([newProfile])
             .select()
             .single()
-          if (!error && createdProfile) {
+          if (!insertError && createdProfile) {
             setProfile(createdProfile)
             setDoc('')
             setPhone('')
           } else {
-            console.error('Failed to create initial profile:', error)
+            console.error('Failed to create initial profile:', insertError)
             toast({
               title: 'Aviso',
               description: 'Não foi possível provisionar o perfil inicial. Verifique sua conexão.',
@@ -61,6 +66,25 @@ export default function Settings() {
     if (!e.target.files || e.target.files.length === 0 || !user) return
 
     const file = e.target.files[0]
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: 'Erro',
+        description: 'A imagem deve ter no máximo 2MB.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      toast({
+        title: 'Erro',
+        description: 'A imagem deve ser PNG ou JPG.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     const fileExt = file.name.split('.').pop()
     const filePath = `${user.id}/logo.${fileExt}`
 
@@ -114,13 +138,13 @@ export default function Settings() {
     if (error) {
       toast({
         title: 'Erro',
-        description: 'Não foi possível salvar os dados.',
+        description: `Erro ao salvar: ${error.message || 'Permissão negada'}`,
         variant: 'destructive',
       })
     } else {
       setProfile({ ...profile, ...updates })
       await refreshProfile()
-      toast({ title: 'Sucesso', description: 'Perfil atualizado com sucesso.' })
+      toast({ title: 'Sucesso', description: 'Configurações atualizadas com sucesso!' })
     }
   }
 
