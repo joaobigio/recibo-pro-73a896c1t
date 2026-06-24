@@ -17,6 +17,7 @@ import { createClient, updateClient, getClients } from '@/services/clients'
 import { maskCpfCnpj } from '@/lib/format'
 import { toast } from 'sonner'
 import { Search, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase/client'
 
 export default function ClientForm() {
   const { id } = useParams()
@@ -115,17 +116,24 @@ export default function ClientForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) {
-      toast.error('Usuário não autenticado.')
-      return
-    }
 
     setLoading(true)
     try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const currentUser = session?.user || user
+
+      if (!currentUser) {
+        toast.error('Usuário não autenticado.')
+        setLoading(false)
+        return
+      }
+
       const clientData = {
         ...formData,
         document: noDocument ? null : formData.document,
-        user_id: user.id,
+        user_id: currentUser.id,
       }
 
       if (id) {

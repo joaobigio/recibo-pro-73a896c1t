@@ -2,6 +2,7 @@
   "_versions": {
     "send-welcome-email": 6,
     "hello-world": 2,
-    "tasks-api": 3
+    "tasks-api": 3,
+    "fu1": 1
   }
 }
