@@ -22,13 +22,27 @@ export default function Settings() {
   const [phone, setPhone] = useState('')
 
   useEffect(() => {
-    if (user) {
-      getProfile(user.id).then(async ({ data, error }) => {
+    if (!user) return
+
+    let isMounted = true
+    let retryCount = 0
+    const maxRetries = 3
+
+    const fetchProfile = async () => {
+      try {
+        const { data, error } = await getProfile(user.id)
+
         if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching profile:', error)
+          throw error
         }
 
         if (!data) {
+          if (retryCount < maxRetries) {
+            retryCount++
+            setTimeout(fetchProfile, 1000)
+            return
+          }
+
           const newProfile = {
             id: user.id,
             user_id: user.id,
@@ -37,28 +51,59 @@ export default function Settings() {
           }
           const { data: createdProfile, error: insertError } = await supabase
             .from('profiles')
-            .insert([newProfile])
+            .upsert([newProfile], { onConflict: 'id' })
             .select()
             .single()
+
+          if (!isMounted) return
+
           if (!insertError && createdProfile) {
             setProfile(createdProfile)
-            setDoc('')
-            setPhone('')
+            setDoc(maskCpfCnpj(createdProfile.document || ''))
+            setPhone(maskPhone(createdProfile.phone || ''))
           } else {
-            console.error('Failed to create initial profile:', insertError)
+            console.error('Failed to provision/fetch profile:', insertError)
             toast({
               title: 'Aviso',
-              description: 'Não foi possível provisionar o perfil inicial. Verifique sua conexão.',
+              description:
+                'Ocorreu um erro ao carregar os dados completos. Tente recarregar a página ou verifique sua conexão.',
               variant: 'destructive',
             })
             setProfile(newProfile)
           }
         } else {
+          if (!isMounted) return
           setProfile(data)
           setDoc(maskCpfCnpj(data.document || ''))
           setPhone(maskPhone(data.phone || ''))
         }
-      })
+      } catch (err) {
+        if (!isMounted) return
+        if (retryCount < maxRetries) {
+          retryCount++
+          setTimeout(fetchProfile, 1000)
+        } else {
+          console.error('Error fetching profile:', err)
+          toast({
+            title: 'Aviso',
+            description:
+              'Ocorreu um erro ao carregar os dados completos. Tente recarregar a página ou verifique sua conexão.',
+            variant: 'destructive',
+          })
+          setProfile({
+            id: user.id,
+            user_id: user.id,
+            email: user.email || '',
+            name: user.user_metadata?.name || '',
+          })
+        }
+      }
+    }
+
+    fetchProfile()
+
+    return () => {
+      isMounted = false
     }
   }, [user])
 

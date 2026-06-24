@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getProfiles, updateProfile, Profile } from '@/services/profiles'
-import { adminAuthClient } from '@/services/admin'
 import { useAuth } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -77,43 +76,37 @@ export default function Users() {
     setIsSubmitting(true)
 
     try {
-      // Create auth user using secondary client
-      const { data: authData, error: authError } = await adminAuthClient.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: { name: formData.name },
+      // Create auth user securely via Edge Function
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          is_admin: formData.is_admin,
         },
       })
 
-      if (authError) throw authError
+      if (error) throw error
+      if (data?.error) throw new Error(data.error)
 
-      const newUserId = authData.user?.id
-      if (newUserId) {
-        // Wait a moment for trigger to create profile
-        await new Promise((r) => setTimeout(r, 1000))
+      // Wait a moment for trigger to finish creating profile (just in case)
+      await new Promise((r) => setTimeout(r, 1000))
 
-        await updateProfile(newUserId, {
+      try {
+        await sendWelcomeEmail({
           name: formData.name,
-          is_admin: formData.is_admin,
+          email: formData.email,
+          password: formData.password,
         })
-
-        try {
-          await sendWelcomeEmail({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-          })
-          toast.success('Usuário criado com sucesso e convite enviado!')
-        } catch (emailError: any) {
-          console.error('Email error:', emailError)
-          toast.error(emailError.message || 'Usuário criado, mas houve erro ao enviar o convite.')
-        }
-
-        setIsAddOpen(false)
-        setFormData({ name: '', email: '', password: '', is_admin: false })
-        loadUsers()
+        toast.success('Usuário criado com sucesso e convite enviado!')
+      } catch (emailError: any) {
+        console.error('Email error:', emailError)
+        toast.error(emailError.message || 'Usuário criado, mas houve erro ao enviar o convite.')
       }
+
+      setIsAddOpen(false)
+      setFormData({ name: '', email: '', password: '', is_admin: false })
+      loadUsers()
     } catch (error: any) {
       console.error(error)
       toast.error(error.message || 'Erro ao criar usuário.')
