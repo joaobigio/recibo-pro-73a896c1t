@@ -93,7 +93,11 @@ export default function Users() {
           is_admin: formData.is_admin,
         })
 
-        await sendWelcomeEmail({ name: formData.name, email: formData.email })
+        await sendWelcomeEmail({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        })
 
         toast.success('Usuário criado e convite enviado!')
         setIsAddOpen(false)
@@ -102,15 +106,7 @@ export default function Users() {
       }
     } catch (error: any) {
       console.error(error)
-      const isEmailError =
-        error.message?.includes('Email') ||
-        error.message?.includes('email') ||
-        error.message?.includes('Resend')
-      toast.error(
-        isEmailError
-          ? 'Erro ao enviar convite. Por favor, tente novamente mais tarde.'
-          : error.message || 'Erro ao criar usuário',
-      )
+      toast.error(error.message || 'Erro ao criar usuário ou enviar convite.')
     } finally {
       setIsSubmitting(false)
     }
@@ -247,8 +243,9 @@ export default function Users() {
                               toast.promise(promise, {
                                 loading: 'Enviando convite...',
                                 success: 'Convite reenviado com sucesso!',
-                                error:
-                                  'Erro ao enviar convite. Por favor, tente novamente mais tarde.',
+                                error: (err) =>
+                                  err.message ||
+                                  'Erro ao enviar convite. Por favor, tente novamente.',
                               })
                             }
                           }}

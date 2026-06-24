@@ -1,6 +1,10 @@
 import { supabase } from '@/lib/supabase/client'
 
-export const sendWelcomeEmail = async (params: { name: string; email: string }) => {
+export const sendWelcomeEmail = async (params: {
+  name: string
+  email: string
+  password?: string
+}) => {
   const { data, error } = await supabase.functions.invoke('send-welcome-email', {
     body: { ...params, appUrl: window.location.origin },
   })
