@@ -25,12 +25,15 @@ export default function Clients() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    loadClients()
-  }, [])
+    if (user) {
+      loadClients()
+    }
+  }, [user])
 
   const loadClients = async () => {
+    if (!user) return
     setLoading(true)
-    const { data } = await getClients()
+    const { data } = await getClients(user.id)
     if (data) setClients(data)
     setLoading(false)
   }

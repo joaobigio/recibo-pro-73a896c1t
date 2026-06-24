@@ -54,8 +54,9 @@ export default function DocumentList() {
   }, [user])
 
   const loadData = async () => {
+    if (!user) return
     setLoading(true)
-    const [docsRes, clientsRes] = await Promise.all([getAllDocuments(), getClients()])
+    const [docsRes, clientsRes] = await Promise.all([getAllDocuments(user.id), getClients(user.id)])
     if (docsRes.data) setDocuments(docsRes.data as any)
     if (clientsRes.data) setClients(clientsRes.data)
     setLoading(false)

@@ -54,7 +54,7 @@ export default function ClientForm() {
     if (!user) return
     setLoading(true)
     try {
-      const { data, error } = await getClients()
+      const { data, error } = await getClients(user.id)
       if (error) throw error
       const client = data?.find((c) => c.id === id)
       if (client) {
@@ -115,7 +115,10 @@ export default function ClientForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      toast.error('Usuário não autenticado.')
+      return
+    }
 
     setLoading(true)
     try {
@@ -127,17 +130,27 @@ export default function ClientForm() {
 
       if (id) {
         const { error } = await updateClient(id, clientData)
-        if (error) throw error
+        if (error) {
+          if (error.code === '23505') {
+            throw new Error('Já existe um cliente com este documento ou e-mail.')
+          }
+          throw error
+        }
         toast.success('Cliente atualizado com sucesso!')
       } else {
         const { error } = await createClient(clientData)
-        if (error) throw error
+        if (error) {
+          if (error.code === '23505') {
+            throw new Error('Já existe um cliente com este documento ou e-mail.')
+          }
+          throw error
+        }
         toast.success('Cliente cadastrado com sucesso!')
       }
       navigate('/clientes')
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
-      toast.error('Erro ao salvar cliente')
+      toast.error(error.message || 'Erro ao salvar cliente')
     } finally {
       setLoading(false)
     }

@@ -59,10 +59,11 @@ export const getMyDocuments = async (userId: string) => {
   return { data: data as Document[] | null, error }
 }
 
-export const getAllDocuments = async () => {
+export const getAllDocuments = async (userId: string) => {
   const { data, error } = await supabase
     .from('documents')
     .select('*, profiles(name, email)')
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
   return { data, error }
 }

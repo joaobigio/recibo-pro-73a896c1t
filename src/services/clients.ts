@@ -20,10 +20,11 @@ export interface Client {
   created_at: string
 }
 
-export const getClients = async () => {
+export const getClients = async (userId: string) => {
   const { data, error } = await supabase
     .from('clients')
     .select('*')
+    .eq('user_id', userId)
     .order('name', { ascending: true })
   return { data: data as Client[] | null, error }
 }

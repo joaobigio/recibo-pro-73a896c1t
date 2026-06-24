@@ -186,16 +186,21 @@ export default function Generator() {
             issuerPixKey: data.pix_key || '',
             logo_url: data.logo_url || '',
           }))
+        } else {
+          setFormData((prev: any) => ({
+            ...prev,
+            issuerName: user.email || '',
+          }))
         }
       })
-      getClients().then(({ data, error }) => {
+      getClients(user.id).then(({ data, error }) => {
         if (error) {
           toast.error('Erro ao carregar clientes')
         } else if (data) {
           setClients(data)
         }
       })
-      getProducts().then(({ data, error }) => {
+      getProducts(user.id).then(({ data, error }) => {
         if (error) {
           toast.error('Erro ao carregar produtos')
         } else if (data) {
@@ -217,7 +222,10 @@ export default function Generator() {
   }, [user])
 
   const handleSave = async () => {
-    if (!user) return false
+    if (!user) {
+      toast.error('Usuário não autenticado.')
+      return false
+    }
 
     if ((formData.description || '').length > 50) {
       toast.error('O campo "Referente a" deve ter no máximo 50 caracteres.')
