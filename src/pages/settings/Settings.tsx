@@ -28,74 +28,48 @@ export default function Settings() {
     if (!user || !session) return
 
     let isMounted = true
-    const maxRetries = 2
-    retryCountRef.current = 0
 
-    const fetchProfile = async () => {
+    const loadProfile = async () => {
       try {
         const { data, error } = await getProfile(user.id)
 
         if (error && error.code !== 'PGRST116') {
-          throw error
+          console.warn('Silent error fetching profile:', error)
         }
 
-        if (!data) {
-          const newProfile = {
+        if (!isMounted) return
+
+        if (data) {
+          setProfile(data)
+          setDoc(maskCpfCnpj(data.document || ''))
+          setPhone(maskPhone(data.phone || ''))
+        } else {
+          const fallbackProfile = {
             id: user.id,
             user_id: user.id,
             email: user.email || '',
             name: user.user_metadata?.name || '',
           }
-
-          const { data: createdProfile, error: insertError } = await supabase
-            .from('profiles')
-            .upsert([newProfile], { onConflict: 'id' })
-            .select()
-            .single()
-
-          if (!isMounted) return
-
-          if (!insertError && createdProfile) {
-            setProfile(createdProfile)
-            setDoc(maskCpfCnpj(createdProfile.document || ''))
-            setPhone(maskPhone(createdProfile.phone || ''))
-            setInitialLoading(false)
-          } else {
-            throw insertError || new Error('Failed to create profile')
-          }
-        } else {
-          if (!isMounted) return
-          setProfile(data)
-          setDoc(maskCpfCnpj(data.document || ''))
-          setPhone(maskPhone(data.phone || ''))
-          setInitialLoading(false)
+          setProfile(fallbackProfile)
         }
       } catch (err) {
-        if (!isMounted) return
-
-        if (retryCountRef.current < maxRetries) {
-          retryCountRef.current++
-          setTimeout(fetchProfile, 500)
-        } else {
-          console.error('Error fetching profile:', err)
-          toast({
-            title: 'Aviso',
-            description:
-              'Ocorreu um erro ao carregar os dados completos. Tente recarregar a página ou verifique sua conexão.',
-            variant: 'destructive',
-          })
+        console.warn('Error fetching profile silently:', err)
+        if (isMounted) {
           setProfile({
             id: user.id,
             user_id: user.id,
             email: user.email || '',
             name: user.user_metadata?.name || '',
           })
+        }
+      } finally {
+        if (isMounted) {
           setInitialLoading(false)
         }
       }
     }
 
-    fetchProfile()
+    loadProfile()
 
     return () => {
       isMounted = false
