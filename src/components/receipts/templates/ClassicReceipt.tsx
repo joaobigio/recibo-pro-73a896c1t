@@ -34,9 +34,9 @@ export function ClassicReceipt({ data, documentTitle }: ReceiptTemplateProps) {
       <div>
         <div className="flex justify-between items-start mb-6 border-b-2 border-gray-300 pb-6 gap-4 min-h-[6rem]">
           <div className="flex-1 pr-4 z-10">
-            {localProfile?.logo_url ? (
+            {data.logo_url || localProfile?.logo_url ? (
               <img
-                src={localProfile.logo_url}
+                src={data.logo_url || localProfile?.logo_url}
                 alt="Logo do Emissor"
                 className="h-[120px] sm:h-[160px] md:h-[200px] w-auto max-w-full object-contain object-left [image-rendering:auto]"
                 style={{ imageRendering: 'high-quality' }}

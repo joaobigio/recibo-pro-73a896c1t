@@ -177,11 +177,12 @@ export default function Generator() {
       getProfile(user.id).then(({ data }) => {
         if (data) {
           setProfile(data)
-          setFormData((prev) => ({
+          setFormData((prev: any) => ({
             ...prev,
             issuerName: data.name || '',
             issuerDocument: data.document || '',
             issuerPixKey: data.pix_key || '',
+            logo_url: data.logo_url || '',
           }))
         }
       })
