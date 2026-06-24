@@ -246,6 +246,7 @@ export default function Generator() {
       }))
       return true
     } catch (error) {
+      console.error(error)
       toast.error('Erro ao salvar o recibo.')
       return false
     } finally {

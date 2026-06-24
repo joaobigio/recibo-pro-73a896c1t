@@ -125,6 +125,7 @@ export default function ClientForm() {
       }
       navigate('/clientes')
     } catch (error) {
+      console.error(error)
       toast.error('Erro ao salvar cliente')
     } finally {
       setLoading(false)
